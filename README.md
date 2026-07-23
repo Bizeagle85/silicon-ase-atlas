@@ -33,6 +33,10 @@ This is an educational interface, not an initiation, divination, consultation, o
 - `downloads/visual-prompt-templates.md`: exact reusable specifications for the eight section images and optional threshold loop.
 - `_headers`: restrictive security and privacy headers for Cloudflare Pages.
 
-## Deployment target
+## Deployment
 
-The requested production URL is `https://loss0.projectdominion.com`. At build time that hostname had no DNS record, and the local Cloudflare deployment tool was not authenticated. The application can be previewed locally without that dependency.
+- Production: <https://loss0.projectdominion.com>
+- Cloudflare Pages: <https://silicon-ase-atlas.pages.dev>
+- Source: <https://github.com/Bizeagle85/silicon-ase-atlas>
+
+The Cloudflare Pages project is connected to this repository's `main` branch. New commits to `main` trigger an automatic production deployment. The custom hostname uses a scoped CNAME record for `loss0.projectdominion.com`; no other `projectdominion.com` records are part of this project.
