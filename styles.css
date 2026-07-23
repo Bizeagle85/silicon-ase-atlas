@@ -1081,7 +1081,9 @@ input::placeholder {
 
 input[type="range"] {
   width: 100%;
+  min-height: 32px;
   accent-color: var(--bronze);
+  cursor: pointer;
 }
 
 .matrix-output {
