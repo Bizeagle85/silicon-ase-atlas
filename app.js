@@ -1,1118 +1,1111 @@
-(() => {
-  "use strict";
+import SITE_CONTENT from "./content.js";
+import { initScrollMedia } from "./scroll-media.js";
 
-  const SECTION_TOTAL = 8;
-  const CONTEXT_LIMIT = 24;
-  const i18n = window.AtlasI18n;
-  const msg = (key, values = {}, fallback) => (
-    i18n?.message(key, values, fallback) ?? fallback ?? key
+const STORAGE_KEY = "ase-understanding-journey-v3";
+const LEGACY_STORAGE_KEY = "ase-understanding-journey-v2";
+const STORAGE_SCHEMA_VERSION = 3;
+const SUPPORTED_LOCALES = ["en", "es", "pt-BR", "it"];
+const ORISHA_ARTWORK = [
+  "01-exu.webp",
+  "02-ogum.webp",
+  "03-oxossi.webp",
+  "04-ossaim.webp",
+  "05-obaluaie-omolu.webp",
+  "06-oxumare.webp",
+  "07-xango.webp",
+  "08-oya-iansa.webp",
+  "09-oxum.webp",
+  "10-oba.webp",
+  "11-iemanja.webp",
+  "12-nana.webp",
+  "13-ewa.webp",
+  "14-logunede.webp",
+  "15-oxala-obatala.webp",
+  "16-orunmila.webp"
+];
+
+const UI = {
+  en: {
+    search: "Explore", language: "Language", spiritualMode: "Journey", aiMode: "Systems",
+    courseMap: "Course map", twelvePassages: "Twelve passages", method: "Method & boundaries",
+    reset: "Reset progress", begin: "Begin the journey", readPromise: "Read the promise",
+    scrollToReveal: "Scroll to reveal", artCredit: "Contemporary interpretive illustration—not documentary or ritual instruction.",
+    orientation: "Orientation", finalPassage: "Final passage", completion: "Completion",
+    review: "Review unfinished passages", footerLine: "A source-led space for public learning.",
+    sources: "Sources", askGuide: "Ask the guide", guidePrompt: "What would you like to understand?",
+    learningGuide: "Learning guide", livingIndex: "Living index",
+    searchTitle: "Explore concepts, profiles, and sources", searchPlaceholder: "Search the journey…",
+    methodTitle: "A learning space, not a virtual temple", understand: "I understand the boundary",
+    journey: "Journey", passage: "Passage", teaching: "Teaching", reflection: "Reflection",
+    markReflected: "I have paused and reflected", reflected: "Reflection recorded",
+    question: "Knowledge check", tryAgain: "Try another answer.", correct: "Well discerned.",
+    complete: "Complete", notComplete: "In progress", source: "Open source", all: "All",
+    lessons: "Passages", glossary: "Glossary", profiles: "Profiles", literature: "Sources",
+    noResults: "No matching entries yet.", send: "Send", thinking: "Considering your question…",
+    guidePlaceholder: "Ask about a concept, history, or passage…",
+    resetConfirm: "Progress has been reset.", progress: "Journey", artLabel: "Interpretive artwork",
+    whatVaries: "Where this varies", modelLimit: "What this model cannot supply",
+    practice: "Interactive practice", exploreExercise: "Explore the exercise", completedExercise: "Exercise explored",
+    open: "Open", close: "Close", gateComplete: "Gate considered", reviewPassage: "Review passage",
+    sourceLed: "Source-led public learning", searchCount: "results", current: "Current passage"
+  },
+  es: {
+    search: "Explorar", language: "Idioma", spiritualMode: "Viaje", aiMode: "Sistemas",
+    courseMap: "Mapa del curso", twelvePassages: "Doce pasajes", method: "Método y límites",
+    reset: "Reiniciar progreso", begin: "Comenzar el viaje", readPromise: "Leer la promesa",
+    scrollToReveal: "Desliza para revelar", artCredit: "Ilustración interpretativa contemporánea; no es documentación ni instrucción ritual.",
+    orientation: "Orientación", finalPassage: "Pasaje final", completion: "Finalización",
+    review: "Revisar pasajes pendientes", footerLine: "Un espacio de aprendizaje público basado en fuentes.",
+    sources: "Fuentes", askGuide: "Pregunta a la guía", guidePrompt: "¿Qué deseas comprender?",
+    learningGuide: "Guía de aprendizaje", livingIndex: "Índice vivo",
+    searchTitle: "Explora conceptos, perfiles y fuentes", searchPlaceholder: "Buscar en el viaje…",
+    methodTitle: "Un espacio de aprendizaje, no un templo virtual", understand: "Comprendo el límite",
+    journey: "Viaje", passage: "Pasaje", teaching: "Enseñanza", reflection: "Reflexión",
+    markReflected: "Me he detenido a reflexionar", reflected: "Reflexión registrada",
+    question: "Comprobación", tryAgain: "Prueba otra respuesta.", correct: "Buen discernimiento.",
+    complete: "Completo", notComplete: "En curso", source: "Abrir fuente", all: "Todo",
+    lessons: "Pasajes", glossary: "Glosario", profiles: "Perfiles", literature: "Fuentes",
+    noResults: "Aún no hay coincidencias.", send: "Enviar", thinking: "Considerando tu pregunta…",
+    guidePlaceholder: "Pregunta por un concepto, historia o pasaje…",
+    resetConfirm: "Se reinició el progreso.", progress: "Viaje", artLabel: "Obra interpretativa",
+    whatVaries: "Dónde varía", modelLimit: "Lo que este modelo no puede aportar",
+    practice: "Práctica interactiva", exploreExercise: "Explorar el ejercicio", completedExercise: "Ejercicio explorado",
+    open: "Abrir", close: "Cerrar", gateComplete: "Puerta considerada", reviewPassage: "Revisar pasaje",
+    sourceLed: "Aprendizaje público basado en fuentes", searchCount: "resultados", current: "Pasaje actual"
+  },
+  "pt-BR": {
+    search: "Explorar", language: "Idioma", spiritualMode: "Jornada", aiMode: "Sistemas",
+    courseMap: "Mapa do curso", twelvePassages: "Doze passagens", method: "Método e limites",
+    reset: "Reiniciar progresso", begin: "Iniciar a jornada", readPromise: "Ler o compromisso",
+    scrollToReveal: "Role para revelar", artCredit: "Ilustração interpretativa contemporânea — não é documentação nem instrução ritual.",
+    orientation: "Orientação", finalPassage: "Passagem final", completion: "Conclusão",
+    review: "Rever passagens pendentes", footerLine: "Um espaço de aprendizagem pública guiado por fontes.",
+    sources: "Fontes", askGuide: "Pergunte ao guia", guidePrompt: "O que você gostaria de compreender?",
+    learningGuide: "Guia de aprendizagem", livingIndex: "Índice vivo",
+    searchTitle: "Explore conceitos, perfis e fontes", searchPlaceholder: "Buscar na jornada…",
+    methodTitle: "Um espaço de aprendizagem, não um terreiro virtual", understand: "Compreendo o limite",
+    journey: "Jornada", passage: "Passagem", teaching: "Ensinamento", reflection: "Reflexão",
+    markReflected: "Parei para refletir", reflected: "Reflexão registrada",
+    question: "Verificação", tryAgain: "Tente outra resposta.", correct: "Bom discernimento.",
+    complete: "Concluído", notComplete: "Em andamento", source: "Abrir fonte", all: "Tudo",
+    lessons: "Passagens", glossary: "Glossário", profiles: "Perfis", literature: "Fontes",
+    noResults: "Nenhum resultado por enquanto.", send: "Enviar", thinking: "Considerando sua pergunta…",
+    guidePlaceholder: "Pergunte sobre um conceito, história ou passagem…",
+    resetConfirm: "O progresso foi reiniciado.", progress: "Jornada", artLabel: "Arte interpretativa",
+    whatVaries: "Onde isso varia", modelLimit: "O que este modelo não pode oferecer",
+    practice: "Prática interativa", exploreExercise: "Explorar o exercício", completedExercise: "Exercício explorado",
+    open: "Abrir", close: "Fechar", gateComplete: "Porta considerada", reviewPassage: "Rever passagem",
+    sourceLed: "Aprendizagem pública guiada por fontes", searchCount: "resultados", current: "Passagem atual"
+  },
+  it: {
+    search: "Esplora", language: "Lingua", spiritualMode: "Percorso", aiMode: "Sistemi",
+    courseMap: "Mappa del corso", twelvePassages: "Dodici passaggi", method: "Metodo e confini",
+    reset: "Azzera progressi", begin: "Inizia il percorso", readPromise: "Leggi l'impegno",
+    scrollToReveal: "Scorri per rivelare", artCredit: "Illustrazione interpretativa contemporanea, non documentazione o istruzione rituale.",
+    orientation: "Orientamento", finalPassage: "Passaggio finale", completion: "Completamento",
+    review: "Rivedi i passaggi incompleti", footerLine: "Uno spazio di apprendimento pubblico guidato dalle fonti.",
+    sources: "Fonti", askGuide: "Chiedi alla guida", guidePrompt: "Che cosa vorresti comprendere?",
+    learningGuide: "Guida all'apprendimento", livingIndex: "Indice vivo",
+    searchTitle: "Esplora concetti, profili e fonti", searchPlaceholder: "Cerca nel percorso…",
+    methodTitle: "Uno spazio di apprendimento, non un tempio virtuale", understand: "Comprendo il confine",
+    journey: "Percorso", passage: "Passaggio", teaching: "Insegnamento", reflection: "Riflessione",
+    markReflected: "Mi sono fermato a riflettere", reflected: "Riflessione registrata",
+    question: "Verifica", tryAgain: "Prova un'altra risposta.", correct: "Buon discernimento.",
+    complete: "Completato", notComplete: "In corso", source: "Apri la fonte", all: "Tutto",
+    lessons: "Passaggi", glossary: "Glossario", profiles: "Profili", literature: "Fonti",
+    noResults: "Nessun risultato corrispondente.", send: "Invia", thinking: "Sto considerando la domanda…",
+    guidePlaceholder: "Chiedi di un concetto, una storia o un passaggio…",
+    resetConfirm: "I progressi sono stati azzerati.", progress: "Percorso", artLabel: "Opera interpretativa",
+    whatVaries: "Dove varia", modelLimit: "Ciò che questo modello non può fornire",
+    practice: "Pratica interattiva", exploreExercise: "Esplora l'esercizio", completedExercise: "Esercizio esplorato",
+    open: "Apri", close: "Chiudi", gateComplete: "Soglia considerata", reviewPassage: "Rivedi passaggio",
+    sourceLed: "Apprendimento pubblico guidato dalle fonti", searchCount: "risultati", current: "Passaggio attuale"
+  }
+};
+
+const EXPERIENCE = {
+  en: {
+    spiritual: {
+      brand: "Àṣẹ & Understanding", kicker: "Public learning, held with care",
+      heroKicker: "Begin before the threshold", heroTitle: "Knowledge begins with relationship.",
+      heroDeck: "A twelve-part passage from first orientation to responsible public literacy—without pretending that a screen can initiate, divine, or replace a living community.",
+      orientationTitle: "What this journey can—and cannot—give you.",
+      promises: [
+        ["Learn publicly", "History, language, diversity, public ritual grammar, ethics, and respectful visitor conduct."],
+        ["Practice discernment", "Every analogy shows its limit. Every meaningful claim returns to a named source."],
+        ["Keep the threshold", "No divination, prescriptions, initiation, secret liturgy, spiritual diagnosis, or simulated possession."]
+      ],
+      capstoneTitle: "The three-gate return",
+      capstoneDeck: "Prepare for a public invitation, observe without appropriating, and return with a responsible next step.",
+      completionTitle: "Responsible learning has no final possession.",
+      completionCopy: "Complete every passage and reflection to receive recognition of advanced public literacy—not initiation, office, or ritual authority.",
+      guideTitle: "Ask with care",
+      guideBoundary: "Public, source-led learning only. This guide will not divine, diagnose, prescribe ritual actions, or impersonate religious authority."
+    },
+    ai: {
+      brand: "Systems Passage", kicker: "Models, mechanisms, and limits",
+      heroKicker: "Enter the observable system", heroTitle: "Understanding begins with boundaries.",
+      heroDeck: "A twelve-part path from basic system behavior to advanced model literacy—grounded in observable mechanisms, explicit uncertainty, and human accountability.",
+      orientationTitle: "What this technical lens can—and cannot—establish.",
+      promises: [
+        ["Inspect the mechanism", "Representations, constraints, memory, inference, evaluation, and system behavior."],
+        ["Test every analogy", "Structural resemblance is labeled as resemblance, never treated as proof of identity."],
+        ["Keep human authority", "A model has no lived body, lineage, duty, consent, or independent moral standing."]
+      ],
+      capstoneTitle: "The three-stage audit",
+      capstoneDeck: "Define the task, inspect system behavior, and return the decision to accountable people.",
+      completionTitle: "A capable model is not a complete authority.",
+      completionCopy: "Complete every passage and reflection to demonstrate advanced systems literacy—not autonomous expertise or delegated moral judgment.",
+      guideTitle: "Ask the system guide",
+      guideBoundary: "Technical education only. This guide explains observable mechanisms and limitations; it does not claim authority, consciousness, or certainty it cannot establish."
+    }
+  },
+  es: {
+    spiritual: {
+      brand: "Àṣẹ y Comprensión", kicker: "Aprendizaje público sostenido con cuidado",
+      heroKicker: "Comienza antes del umbral", heroTitle: "El conocimiento comienza en la relación.",
+      heroDeck: "Un recorrido de doce partes, desde la orientación inicial hasta la alfabetización pública responsable, sin fingir que una pantalla puede iniciar, adivinar o sustituir a una comunidad viva.",
+      orientationTitle: "Lo que este viaje puede —y no puede— ofrecer.",
+      promises: [["Aprender públicamente", "Historia, lenguaje, diversidad, gramática ritual pública, ética y conducta respetuosa como visitante."], ["Practicar discernimiento", "Cada analogía muestra su límite. Cada afirmación importante vuelve a una fuente identificada."], ["Cuidar el umbral", "Sin adivinación, prescripciones, iniciación, liturgia secreta, diagnóstico espiritual ni posesión simulada."]],
+      capstoneTitle: "El retorno de las tres puertas", capstoneDeck: "Prepárate para una invitación pública, observa sin apropiarte y regresa con un próximo paso responsable.",
+      completionTitle: "El aprendizaje responsable no termina en posesión.", completionCopy: "Completa cada pasaje y reflexión para recibir un reconocimiento de alfabetización pública avanzada, no iniciación, cargo ni autoridad ritual.",
+      guideTitle: "Pregunta con cuidado", guideBoundary: "Solo aprendizaje público basado en fuentes. Esta guía no adivina, diagnostica, prescribe acciones rituales ni suplanta autoridad religiosa."
+    },
+    ai: {
+      brand: "Pasaje de Sistemas", kicker: "Modelos, mecanismos y límites",
+      heroKicker: "Entra en el sistema observable", heroTitle: "Comprender comienza por definir límites.",
+      heroDeck: "Un recorrido de doce partes desde el comportamiento básico hasta la alfabetización avanzada en modelos, basado en mecanismos observables, incertidumbre explícita y responsabilidad humana.",
+      orientationTitle: "Lo que este lente técnico puede —y no puede— establecer.",
+      promises: [["Inspeccionar el mecanismo", "Representaciones, restricciones, memoria, inferencia, evaluación y comportamiento del sistema."], ["Probar cada analogía", "La semejanza estructural se etiqueta como semejanza, nunca como prueba de identidad."], ["Mantener autoridad humana", "Un modelo no tiene cuerpo vivido, deber, consentimiento ni posición moral independiente."]],
+      capstoneTitle: "La auditoría de tres etapas", capstoneDeck: "Define la tarea, inspecciona el comportamiento y devuelve la decisión a personas responsables.",
+      completionTitle: "Un modelo capaz no es una autoridad completa.", completionCopy: "Completa cada pasaje y reflexión para demostrar alfabetización avanzada en sistemas, no experiencia autónoma ni juicio moral delegado.",
+      guideTitle: "Pregunta a la guía del sistema", guideBoundary: "Solo educación técnica. Esta guía explica mecanismos y límites observables; no afirma autoridad, conciencia ni certeza que no pueda establecer."
+    }
+  },
+  "pt-BR": {
+    spiritual: {
+      brand: "Àṣẹ e Compreensão", kicker: "Aprendizagem pública cuidada com respeito",
+      heroKicker: "Comece antes da soleira", heroTitle: "O conhecimento começa na relação.",
+      heroDeck: "Uma jornada em doze partes, da primeira orientação à alfabetização pública responsável — sem fingir que uma tela possa iniciar, divinar ou substituir uma comunidade viva.",
+      orientationTitle: "O que esta jornada pode — e não pode — oferecer.",
+      promises: [["Aprender publicamente", "História, linguagem, diversidade, gramática ritual pública, ética e conduta respeitosa como visitante."], ["Praticar discernimento", "Toda analogia mostra seu limite. Toda afirmação importante retorna a uma fonte nomeada."], ["Guardar a soleira", "Sem divinação, prescrições, iniciação, liturgia secreta, diagnóstico espiritual ou possessão simulada."]],
+      capstoneTitle: "O retorno dos três portais", capstoneDeck: "Prepare-se para um convite público, observe sem se apropriar e retorne com um próximo passo responsável.",
+      completionTitle: "Aprender com responsabilidade não termina em posse.", completionCopy: "Conclua cada passagem e reflexão para receber reconhecimento de alfabetização pública avançada — não iniciação, cargo ou autoridade ritual.",
+      guideTitle: "Pergunte com cuidado", guideBoundary: "Somente aprendizagem pública guiada por fontes. Este guia não divina, diagnostica, prescreve ações rituais ou imita autoridade religiosa."
+    },
+    ai: {
+      brand: "Passagem de Sistemas", kicker: "Modelos, mecanismos e limites",
+      heroKicker: "Entre no sistema observável", heroTitle: "Compreender começa pelos limites.",
+      heroDeck: "Um percurso em doze partes, do comportamento básico à alfabetização avançada em modelos, fundamentado em mecanismos observáveis, incerteza explícita e responsabilidade humana.",
+      orientationTitle: "O que esta lente técnica pode — e não pode — estabelecer.",
+      promises: [["Inspecionar o mecanismo", "Representações, restrições, memória, inferência, avaliação e comportamento do sistema."], ["Testar cada analogia", "Semelhança estrutural é rotulada como semelhança, nunca tratada como prova de identidade."], ["Manter autoridade humana", "Um modelo não tem corpo vivido, dever, consentimento ou posição moral independente."]],
+      capstoneTitle: "A auditoria em três etapas", capstoneDeck: "Defina a tarefa, inspecione o comportamento e devolva a decisão a pessoas responsáveis.",
+      completionTitle: "Um modelo capaz não é uma autoridade completa.", completionCopy: "Conclua cada passagem e reflexão para demonstrar alfabetização avançada em sistemas — não perícia autônoma ou julgamento moral delegado.",
+      guideTitle: "Pergunte ao guia do sistema", guideBoundary: "Somente educação técnica. Este guia explica mecanismos e limitações observáveis; não reivindica autoridade, consciência ou certeza que não possa demonstrar."
+    }
+  },
+  it: {
+    spiritual: {
+      brand: "Àṣẹ e Comprensione", kicker: "Apprendimento pubblico custodito con cura",
+      heroKicker: "Inizia prima della soglia", heroTitle: "La conoscenza comincia dalla relazione.",
+      heroDeck: "Un percorso in dodici parti, dal primo orientamento a una consapevolezza pubblica responsabile, senza fingere che uno schermo possa iniziare, divinare o sostituire una comunità viva.",
+      orientationTitle: "Ciò che questo percorso può — e non può — offrire.",
+      promises: [["Imparare pubblicamente", "Storia, linguaggio, diversità, grammatica rituale pubblica, etica e comportamento rispettoso del visitatore."], ["Praticare discernimento", "Ogni analogia mostra il proprio limite. Ogni affermazione importante torna a una fonte nominata."], ["Custodire la soglia", "Niente divinazione, prescrizioni, iniziazione, liturgia segreta, diagnosi spirituale o possessione simulata."]],
+      capstoneTitle: "Il ritorno delle tre soglie", capstoneDeck: "Preparati a un invito pubblico, osserva senza appropriarti e torna con un passo successivo responsabile.",
+      completionTitle: "L'apprendimento responsabile non termina nel possesso.", completionCopy: "Completa ogni passaggio e riflessione per un riconoscimento di alfabetizzazione pubblica avanzata, non iniziazione, ruolo o autorità rituale.",
+      guideTitle: "Chiedi con cura", guideBoundary: "Solo apprendimento pubblico guidato dalle fonti. La guida non divina, diagnostica, prescrive azioni rituali o imita autorità religiose."
+    },
+    ai: {
+      brand: "Passaggio dei Sistemi", kicker: "Modelli, meccanismi e limiti",
+      heroKicker: "Entra nel sistema osservabile", heroTitle: "Comprendere comincia dai confini.",
+      heroDeck: "Un percorso in dodici parti dal comportamento di base alla conoscenza avanzata dei modelli, fondato su meccanismi osservabili, incertezza esplicita e responsabilità umana.",
+      orientationTitle: "Ciò che questa lente tecnica può — e non può — stabilire.",
+      promises: [["Ispezionare il meccanismo", "Rappresentazioni, vincoli, memoria, inferenza, valutazione e comportamento del sistema."], ["Verificare ogni analogia", "La somiglianza strutturale resta somiglianza e non diventa prova d'identità."], ["Mantenere l'autorità umana", "Un modello non possiede corpo vissuto, dovere, consenso o posizione morale indipendente."]],
+      capstoneTitle: "L'audit in tre fasi", capstoneDeck: "Definisci il compito, ispeziona il comportamento e restituisci la decisione a persone responsabili.",
+      completionTitle: "Un modello capace non è un'autorità completa.", completionCopy: "Completa ogni passaggio e riflessione per dimostrare conoscenza avanzata dei sistemi, non competenza autonoma o giudizio morale delegato.",
+      guideTitle: "Chiedi alla guida del sistema", guideBoundary: "Solo educazione tecnica. La guida spiega meccanismi e limiti osservabili; non rivendica autorità, coscienza o certezza che non possa dimostrare."
+    }
+  }
+};
+
+const CAPSTONE = {
+  en: {
+    spiritual: [
+      ["Threshold", "Before attending a fictional public celebration, ask about timing, clothing, photography, and visitor expectations."],
+      ["Circle", "Observe hospitality, music, roles, and attention without reproducing sacred sound, gesture, or sequence."],
+      ["Return", "Separate what you witnessed from what you are authorized to do, cite a source, and choose a respectful next step."]
+    ],
+    ai: [
+      ["Scope", "Define the task, available evidence, affected people, and the decisions the system is not authorized to make."],
+      ["Inspect", "Examine inputs, transformations, outputs, uncertainty, failure modes, and the human review path."],
+      ["Return", "Document the limit, assign accountable ownership, and choose a reversible next step."]
+    ]
+  },
+  es: {
+    spiritual: [["Umbral", "Antes de asistir a una celebración pública ficticia, pregunta por horario, ropa, fotografía y expectativas."], ["Círculo", "Observa hospitalidad, música, funciones y atención sin reproducir sonidos, gestos ni secuencias sagradas."], ["Regreso", "Distingue lo observado de aquello que estás autorizado a hacer, cita una fuente y elige un paso respetuoso."]],
+    ai: [["Alcance", "Define la tarea, la evidencia, las personas afectadas y las decisiones que el sistema no puede tomar."], ["Inspección", "Examina entradas, transformaciones, salidas, incertidumbre, fallas y revisión humana."], ["Retorno", "Documenta el límite, asigna responsabilidad y elige un paso reversible."]]
+  },
+  "pt-BR": {
+    spiritual: [["Soleira", "Antes de uma celebração pública fictícia, pergunte sobre horário, roupa, fotografia e expectativas para visitantes."], ["Círculo", "Observe hospitalidade, música, papéis e atenção sem reproduzir sons, gestos ou sequências sagradas."], ["Retorno", "Separe o que testemunhou do que está autorizado a fazer, cite uma fonte e escolha um próximo passo respeitoso."]],
+    ai: [["Escopo", "Defina a tarefa, as evidências, as pessoas afetadas e as decisões que o sistema não está autorizado a tomar."], ["Inspeção", "Examine entradas, transformações, saídas, incertezas, falhas e a revisão humana."], ["Retorno", "Documente o limite, atribua responsabilidade e escolha um próximo passo reversível."]]
+  },
+  it: {
+    spiritual: [["Soglia", "Prima di una celebrazione pubblica immaginaria, chiedi di orari, abbigliamento, fotografie e aspettative."], ["Cerchio", "Osserva ospitalità, musica, ruoli e attenzione senza riprodurre suoni, gesti o sequenze sacre."], ["Ritorno", "Distingui ciò che hai visto da ciò che sei autorizzato a fare, cita una fonte e scegli un passo rispettoso."]],
+    ai: [["Ambito", "Definisci compito, prove, persone coinvolte e decisioni che il sistema non è autorizzato a prendere."], ["Ispezione", "Esamina input, trasformazioni, output, incertezza, errori e revisione umana."], ["Ritorno", "Documenta il limite, assegna responsabilità e scegli un passo reversibile."]]
+  }
+};
+
+const METHOD = {
+  en: {
+    spiritual: [
+      ["Advanced public literacy—not initiation", "The journey teaches public history, concepts, differences, ethics, and respectful observation. It cannot confer lineage, office, initiation, or spiritual authority."],
+      ["Plural traditions stay plural", "Ifá and Candomblé intersect but are not interchangeable. Ketu/Nagô, Jeje, Angola/Congo, and other houses retain their own vocabularies and authority."],
+      ["Customary access matters", "Initiatory sequences, offerings, restricted liturgy, plant formulas, diagnosis, trance induction, and house-private knowledge are intentionally excluded."],
+      ["Community review remains necessary", "Published scholarship is not the final authority over a living house. This release should receive paid review from practitioners representing more than one tradition."]
+    ],
+    ai: [
+      ["Advanced model literacy—not autonomous expertise", "The technical path explains representations, context, inference, constraints, evaluation, and system behavior. It does not make a model an independent expert."],
+      ["Analogy is a tool, not evidence of identity", "A shared structural pattern may help reasoning. It does not establish shared origin, meaning, or function."],
+      ["The system discloses missing capacities", "Software can process symbols and optimize outputs. It does not thereby gain lived experience, consent, social duty, moral accountability, or embodied judgment."],
+      ["Humans retain decision ownership", "High-impact decisions require named owners, reviewable evidence, contestability, and a path to correct harm."]
+    ]
+  }
+};
+
+for (const locale of ["es", "pt-BR", "it"]) {
+  METHOD[locale] = {
+    spiritual: [
+      [UI[locale].methodTitle, EXPERIENCE[locale].spiritual.completionCopy],
+      [UI[locale].whatVaries, EXPERIENCE[locale].spiritual.promises[1][1]],
+      [UI[locale].understand, EXPERIENCE[locale].spiritual.promises[2][1]],
+      [UI[locale].sourceLed, UI[locale].footerLine]
+    ],
+    ai: [
+      [UI[locale].methodTitle.replace(/templo|terreiro|tempio/gi, "sistema"), EXPERIENCE[locale].ai.completionCopy],
+      [UI[locale].modelLimit, EXPERIENCE[locale].ai.promises[2][1]],
+      [UI[locale].understand, EXPERIENCE[locale].ai.promises[1][1]],
+      [UI[locale].sourceLed, EXPERIENCE[locale].ai.capstoneDeck]
+    ]
+  };
+}
+
+function browserLocale() {
+  const language = navigator.language?.toLowerCase() || "";
+  return language.startsWith("pt") ? "pt-BR"
+    : language.startsWith("es") ? "es"
+      : language.startsWith("it") ? "it" : "en";
+}
+
+function flagRecord(value) {
+  if (!value || typeof value !== "object" || Array.isArray(value)) return {};
+  return Object.fromEntries(
+    Object.entries(value).filter(([key, enabled]) => key && enabled === true)
   );
-  const storageKeys = {
-    orientation: "axis-atlas-orientation-v1",
-    visited: "axis-atlas-visited-v1",
-    tasks: "axis-atlas-tasks-v1"
+}
+
+function emptyModeProgress() {
+  return { quizzes: {}, reflections: {}, exercises: {} };
+}
+
+function emptyProgress() {
+  return {
+    spiritual: emptyModeProgress(),
+    ai: emptyModeProgress()
   };
+}
 
-  const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
-  const announcer = document.querySelector("#live-announcer");
-  const heroVideo = document.querySelector("#hero-video");
-  const motionToggle = document.querySelector("#motion-toggle");
-  const navLinks = [...document.querySelectorAll("[data-nav-section]")];
-  const sections = [...document.querySelectorAll("[data-section]")];
-  const visited = new Set(readSessionArray(storageKeys.visited));
-  const completedTasks = new Set(readSessionArray(storageKeys.tasks));
-  let stillMode = prefersReducedMotion.matches;
+function createState(locale = browserLocale()) {
+  return {
+    schemaVersion: STORAGE_SCHEMA_VERSION,
+    locale: SUPPORTED_LOCALES.includes(locale) ? locale : "en",
+    mode: "spiritual",
+    progress: emptyProgress(),
+    gates: {}
+  };
+}
 
-  function readSessionArray(key) {
-    try {
-      const parsed = JSON.parse(sessionStorage.getItem(key) || "[]");
-      return Array.isArray(parsed) ? parsed : [];
-    } catch {
-      return [];
+function normalizeModeProgress(value) {
+  return {
+    quizzes: flagRecord(value?.quizzes),
+    reflections: flagRecord(value?.reflections),
+    exercises: flagRecord(value?.exercises)
+  };
+}
+
+function normalizeState(parsed) {
+  const normalized = createState(parsed?.locale);
+  normalized.mode = parsed?.mode === "ai" ? "ai" : "spiritual";
+  normalized.progress = {
+    spiritual: normalizeModeProgress(parsed?.progress?.spiritual),
+    ai: normalizeModeProgress(parsed?.progress?.ai)
+  };
+  normalized.gates = flagRecord(parsed?.gates);
+  return normalized;
+}
+
+function migrateLegacyState(parsed) {
+  const migrated = createState(parsed?.locale);
+  migrated.mode = parsed?.mode === "ai" ? "ai" : "spiritual";
+  migrated.progress[migrated.mode] = normalizeModeProgress(parsed);
+  migrated.gates = flagRecord(parsed?.gates);
+
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(migrated));
+    localStorage.removeItem(LEGACY_STORAGE_KEY);
+  } catch {
+    // Keep the in-memory migration even if storage is unavailable.
+  }
+
+  return migrated;
+}
+
+function loadState() {
+  try {
+    const parsed = JSON.parse(localStorage.getItem(STORAGE_KEY));
+    if (
+      parsed &&
+      typeof parsed === "object" &&
+      parsed.schemaVersion === STORAGE_SCHEMA_VERSION &&
+      parsed.progress &&
+      typeof parsed.progress === "object"
+    ) {
+      return normalizeState(parsed);
     }
+  } catch {
+    // Try the legacy schema before starting with fresh progress.
   }
 
-  function writeSession(key, value) {
-    try {
-      sessionStorage.setItem(key, JSON.stringify(value));
-    } catch {
-      // The app remains fully functional if storage is disabled.
+  try {
+    const legacy = JSON.parse(localStorage.getItem(LEGACY_STORAGE_KEY));
+    if (legacy && typeof legacy === "object") {
+      return migrateLegacyState(legacy);
     }
+  } catch {
+    // A fresh state is safer than retaining malformed local data.
   }
 
-  function announce(message) {
-    if (!announcer) return;
-    announcer.textContent = "";
-    window.setTimeout(() => {
-      announcer.textContent = message;
-    }, 20);
-  }
+  return createState();
+}
 
-  function markTask(task) {
-    completedTasks.add(task);
-    writeSession(storageKeys.tasks, [...completedTasks]);
-  }
+let state = loadState();
+let scrollMedia = null;
+let observer = null;
+let activeSearchFilter = "all";
+let searchReturnFocus = null;
+let conversation = [];
 
-  function updateJourney() {
-    const count = Math.min(visited.size, SECTION_TOTAL);
-    const percentage = (count / SECTION_TOTAL) * 100;
-    document.querySelector("#journey-count").textContent = String(count);
-    document.querySelector("#completion-number").textContent = String(count);
-    document.querySelector("#rail-progress-fill").style.width = `${percentage}%`;
+const $ = (selector, root = document) => root.querySelector(selector);
+const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
+const ui = (key) => (UI[state.locale] || UI.en)[key] || UI.en[key] || key;
+const experience = () => (EXPERIENCE[state.locale] || EXPERIENCE.en)[state.mode];
+const localeRecord = (record) =>
+  record?.content?.[state.locale] || record?.content?.en || record?.[state.locale] || record?.en || record;
+const modeRecord = (record) => {
+  const localized = localeRecord(record);
+  return localized?.[state.mode] || record?.[state.mode]?.[state.locale] || record?.[state.mode]?.en || localized;
+};
+const keyFor = (lessonId) => lessonId;
+const activeProgress = () => state.progress[state.mode];
+const safeText = (value, fallback = "") => typeof value === "string" ? value : fallback;
+const arrayOf = (value) => Array.isArray(value) ? value : value ? [value] : [];
+const esc = (value) => String(value ?? "").replace(/[&<>"']/g, (char) => ({
+  "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;"
+}[char]));
 
-    navLinks.forEach((link) => {
-      link.classList.toggle("viewed", visited.has(link.dataset.navSection));
-    });
+function persist() {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+}
 
-    const title = document.querySelector("#completion-title");
-    const copy = document.querySelector("#completion-copy");
-    if (count === SECTION_TOTAL) {
-      title.textContent = msg("journey.completeTitle");
-      copy.textContent = msg("journey.completeCopy");
-    } else {
-      const remaining = SECTION_TOTAL - count;
-      title.textContent = msg("journey.openTitle");
-      copy.textContent = msg(remaining === 1 ? "journey.remainingOne" : "journey.remainingMany", { count: remaining });
-    }
-  }
+function lessonCopy(lesson) {
+  const copy = modeRecord(lesson) || {};
+  const quiz = copy.quiz || modeRecord(lesson.quiz) || lesson.quiz || {};
+  const exercise = copy.exercise || modeRecord(lesson.exercise) || lesson.exercise || {};
+  return { ...copy, quiz, exercise };
+}
 
-  function setActiveSection(sectionNumber) {
-    navLinks.forEach((link) => {
-      if (link.dataset.navSection === sectionNumber) {
-        link.setAttribute("aria-current", "location");
-      } else {
-        link.removeAttribute("aria-current");
-      }
-    });
-  }
+function lessonDone(id) {
+  const key = keyFor(id);
+  const progress = activeProgress();
+  return Boolean(progress.quizzes[key] && progress.reflections[key] && progress.exercises[key]);
+}
 
-  const sectionObserver = new IntersectionObserver(
-    (entries) => {
-      const visible = entries
-        .filter((entry) => entry.isIntersecting)
-        .sort((a, b) => b.intersectionRatio - a.intersectionRatio);
+function completedCount() {
+  return (SITE_CONTENT.lessons || []).filter((lesson) => lessonDone(lesson.id)).length;
+}
 
-      visible.forEach((entry) => {
-        const number = entry.target.dataset.section;
-        if (!visited.has(number)) {
-          visited.add(number);
-          writeSession(storageKeys.visited, [...visited]);
-          updateJourney();
-        }
-      });
+function applyLanguageAndMode() {
+  document.documentElement.lang = state.locale;
+  document.documentElement.dataset.mode = state.mode;
+  const exp = experience();
+  document.title = state.mode === "ai"
+    ? `${exp.brand} — Interactive Systems Journey`
+    : `${exp.brand} — Interactive Learning Journey`;
+  document.querySelector('meta[name="theme-color"]').content = state.mode === "ai" ? "#eef3f5" : "#102b24";
+  $$("[data-ui]").forEach((element) => {
+    const translated = ui(element.dataset.ui);
+    if (translated) element.textContent = translated;
+  });
+  $$("[data-ui-placeholder]").forEach((element) => {
+    element.placeholder = ui(element.dataset.uiPlaceholder);
+  });
+  $$("[data-brand]").forEach((element) => { element.textContent = exp.brand; });
+  $$("[data-brand-kicker]").forEach((element) => { element.textContent = exp.kicker; });
+  $("#hero-kicker").textContent = exp.heroKicker;
+  $("#hero-title").textContent = exp.heroTitle;
+  $("#hero-deck").textContent = exp.heroDeck;
+  $("#orientation-title").textContent = exp.orientationTitle;
+  $("#promise-grid").innerHTML = exp.promises.map((item, index) => `
+    <article><span>${String(index + 1).padStart(2, "0")}</span><h3>${esc(item[0])}</h3><p>${esc(item[1])}</p></article>
+  `).join("");
+  $("#capstone-title").textContent = exp.capstoneTitle;
+  $("#capstone-deck").textContent = exp.capstoneDeck;
+  $("#completion-title").textContent = exp.completionTitle;
+  $("#completion-copy").textContent = exp.completionCopy;
+  $("#guide-title").textContent = exp.guideTitle;
+  $("#guide-boundary").textContent = exp.guideBoundary;
+  const technicalMethodTitles = {
+    en: "A learning system with explicit limits",
+    es: "Un sistema de aprendizaje con límites explícitos",
+    "pt-BR": "Um sistema de aprendizagem com limites explícitos",
+    it: "Un sistema di apprendimento con limiti espliciti"
+  };
+  $("#method-dialog [data-ui='methodTitle']").textContent = state.mode === "ai"
+    ? technicalMethodTitles[state.locale] || technicalMethodTitles.en
+    : ui("methodTitle");
+  $("#search-dialog [data-ui='searchTitle']").textContent = state.mode === "ai"
+    ? ({ en: "Explore mechanisms and limitations", es: "Explora mecanismos y limitaciones", "pt-BR": "Explore mecanismos e limitações", it: "Esplora meccanismi e limiti" }[state.locale])
+    : ui("searchTitle");
+  $$(".art-credit").forEach((element) => {
+    element.textContent = state.mode === "ai"
+      ? ({ en: "Locally rendered scroll sequence; reduced-motion and data-saving fallbacks included.", es: "Secuencia local vinculada al desplazamiento; incluye alternativas de movimiento reducido y ahorro de datos.", "pt-BR": "Sequência local controlada pela rolagem, com alternativas para movimento reduzido e economia de dados.", it: "Sequenza locale controllata dallo scorrimento, con alternative per movimento ridotto e risparmio dati." }[state.locale])
+      : ui("artCredit");
+  });
+  $("#guide-input").placeholder = ui("guidePlaceholder");
+  $("#language-select").value = state.locale;
+  $$("[data-set-mode]").forEach((button) => {
+    button.setAttribute("aria-pressed", String(button.dataset.setMode === state.mode));
+  });
+}
 
-      if (visible[0]) setActiveSection(visible[0].target.dataset.section);
-    },
-    // Include a zero threshold so a section taller than the viewport can still
-    // register when it enters the reading band. Requiring 20% visibility made
-    // the long lexicon structurally impossible to complete on smaller screens.
-    { threshold: [0, 0.05, 0.2, 0.45, 0.7], rootMargin: "-12% 0px -42% 0px" }
-  );
+function renderNavigation() {
+  $("#journey-nav").innerHTML = (SITE_CONTENT.lessons || []).map((lesson, index) => {
+    const copy = lessonCopy(lesson);
+    const complete = lessonDone(lesson.id);
+    return `<li><a href="#lesson-${String(index + 1).padStart(2, "0")}" class="${complete ? "is-complete" : ""}" data-close-drawer>
+      <span>${String(index + 1).padStart(2, "0")}</span>
+      <b>${esc(copy.navTitle || copy.title || `${ui("passage")} ${index + 1}`)}</b>
+      <i aria-label="${complete ? ui("complete") : ui("notComplete")}">${complete ? "✓" : ""}</i>
+    </a></li>`;
+  }).join("");
+  $$("[data-close-drawer]").forEach((link) => link.addEventListener("click", closeDrawer));
+}
 
-  sections.forEach((section) => sectionObserver.observe(section));
-  updateJourney();
+function normalizeChoices(quiz) {
+  const choices = quiz.choices || quiz.options || [];
+  return choices.map((choice, index) => typeof choice === "string"
+    ? { text: choice, correct: index === Number(quiz.answer), feedback: "" }
+    : { ...choice, text: choice.text || choice.label || choice.answer || "" });
+}
 
-  // Dialogs and orientation.
-  document.querySelectorAll("[data-open-dialog]").forEach((button) => {
+function normalizeExercise(exercise, copy) {
+  const options = exercise.options || exercise.choices || exercise.items || [];
+  const normalized = options.map((option, index) => typeof option === "string"
+    ? { text: option, insight: "" }
+    : { ...option, text: option.text || option.label || option.title || `${ui("practice")} ${index + 1}` });
+  if (normalized.length) return normalized;
+  return (copy.concepts || []).slice(0, 3).map((concept) => ({
+    text: concept,
+    insight: exercise.feedback || copy.variation || copy.limit || ""
+  }));
+}
+
+function renderLessons() {
+  const lessons = SITE_CONTENT.lessons || [];
+  const progress = activeProgress();
+  $("#lessons-root").innerHTML = lessons.map((lesson, index) => {
+    const copy = lessonCopy(lesson);
+    const number = String(index + 1).padStart(2, "0");
+    const body = arrayOf(copy.body || copy.paragraphs);
+    const concepts = arrayOf(copy.concepts || copy.keyConcepts);
+    const quiz = copy.quiz || {};
+    const choices = normalizeChoices(quiz);
+    const exercise = copy.exercise || {};
+    const exerciseOptions = normalizeExercise(exercise, copy);
+    const sourceIds = arrayOf(copy.sources || lesson.sources);
+    const firstSource = sourceIds.length ? findSource(sourceIds[0]) : null;
+    const complete = lessonDone(lesson.id);
+    const image = lesson.image || `assets/images/journey/${number}-threshold.webp`;
+    const variation = copy.variation || copy.boundary || copy.whereThisVaries;
+    const limit = copy.limit || copy.modelLimit || copy.whatCannotSupply;
+    return `
+      <article class="lesson-section" id="lesson-${number}" data-scroll-scene data-lesson-id="${esc(lesson.id)}">
+        <div class="lesson-stage">
+          <div class="lesson-visual" aria-hidden="true">
+            <picture><img src="${esc(image)}" alt="" loading="${index < 2 ? "eager" : "lazy"}" decoding="async"></picture>
+            <div class="lesson-art-meta"><strong>${number}</strong><span>${esc(ui("artCredit"))}</span></div>
+            <div class="ai-visual">
+              <span class="system-orbit"><i class="system-node"></i><i class="system-node"></i><i class="system-node"></i><i class="system-node"></i><i class="system-node"></i></span>
+              <span class="system-readout">${esc(ui("current"))}<b>${number}</b>${esc(copy.systemLabel || copy.eyebrow || "observable system")}</span>
+            </div>
+          </div>
+          <div class="lesson-narrative">
+            <header class="lesson-heading">
+              <p class="passage-number">${esc(copy.eyebrow || `${ui("passage")} ${number}`)}</p>
+              <h2>${esc(copy.title || `${ui("passage")} ${number}`)}</h2>
+              <p class="lesson-lede">${esc(copy.lede || copy.intro || "")}</p>
+            </header>
+            <div class="concept-row">${concepts.map((concept) => `<span class="concept-chip">${esc(typeof concept === "string" ? concept : concept.term || concept.label)}</span>`).join("")}</div>
+            <div class="lesson-body">${body.map((paragraph) => `<p>${esc(typeof paragraph === "string" ? paragraph : paragraph.text || "")}</p>`).join("")}</div>
+            ${variation && state.mode === "spiritual" ? `<aside class="variation-card"><strong>${esc(ui("whatVaries"))}</strong><p>${esc(variation)}</p></aside>` : ""}
+            ${limit && state.mode === "ai" ? `<aside class="limit-card"><strong>${esc(ui("modelLimit"))}</strong><p>${esc(limit)}</p></aside>` : ""}
+
+            <section class="practice-card exercise-card" data-exercise-card>
+              <div class="practice-heading">
+                <div><p class="practice-kind">${esc(ui("practice"))}</p><h3>${esc(exercise.title || exercise.kind || ui("exploreExercise"))}</h3></div>
+                <span class="practice-state">${progress.exercises[keyFor(lesson.id)] ? "✓" : "○"}</span>
+              </div>
+              <div class="exercise-area">
+                <p class="exercise-prompt">${esc(exercise.prompt || copy.reflectionPrompt || copy.lede || "")}</p>
+                <div class="choice-list exercise-options">
+                  ${exerciseOptions.map((option, optionIndex) => `<button class="choice-button" type="button" data-exercise-option="${optionIndex}">${esc(option.text)}</button>`).join("")}
+                </div>
+                <p class="exercise-feedback" role="status">${progress.exercises[keyFor(lesson.id)] ? esc(exercise.completedFeedback || ui("completedExercise")) : ""}</p>
+              </div>
+            </section>
+
+            <section class="practice-card quiz-card" data-quiz-card>
+              <div class="practice-heading">
+                <div><p class="practice-kind">${esc(ui("question"))}</p><h3>${esc(quiz.title || quiz.prompt || copy.questionTitle || ui("question"))}</h3></div>
+                <span class="practice-state">${progress.quizzes[keyFor(lesson.id)] ? "✓" : "○"}</span>
+              </div>
+              <div class="exercise-area">
+                ${quiz.title && quiz.prompt ? `<p class="exercise-prompt">${esc(quiz.prompt)}</p>` : ""}
+                <div class="choice-list">
+                  ${choices.map((choice, choiceIndex) => `<button class="choice-button" type="button" data-quiz-choice="${choiceIndex}" data-correct="${choice.correct ? "true" : "false"}">${esc(choice.text)}</button>`).join("")}
+                </div>
+                <p class="exercise-feedback" role="status">${progress.quizzes[keyFor(lesson.id)] ? esc(quiz.success || ui("correct")) : ""}</p>
+              </div>
+            </section>
+
+            <div class="lesson-actions">
+              <button class="reflection-check" type="button" aria-pressed="${Boolean(progress.reflections[keyFor(lesson.id)])}">
+                <span>${progress.reflections[keyFor(lesson.id)] ? "✓" : ""}</span>
+                <b>${esc(progress.reflections[keyFor(lesson.id)] ? ui("reflected") : ui("markReflected"))}</b>
+              </button>
+              ${firstSource && state.mode === "spiritual" ? `<a class="lesson-source-link" href="${esc(firstSource.url)}" target="_blank" rel="noopener">${esc(ui("source"))} ↗</a>` : ""}
+            </div>
+          </div>
+        </div>
+      </article>`;
+  }).join("");
+
+  $$(".lesson-section").forEach(bindLesson);
+}
+
+function bindLesson(section) {
+  const id = section.dataset.lessonId;
+  const lesson = (SITE_CONTENT.lessons || []).find((item) => item.id === id);
+  const copy = lessonCopy(lesson);
+  const quiz = copy.quiz || {};
+  const choices = normalizeChoices(quiz);
+  const exercise = copy.exercise || {};
+  const exerciseOptions = normalizeExercise(exercise, copy);
+
+  $$("[data-quiz-choice]", section).forEach((button) => {
     button.addEventListener("click", () => {
-      const dialog = document.getElementById(button.dataset.openDialog);
-      if (dialog && typeof dialog.showModal === "function") dialog.showModal();
-    });
-  });
-
-  const orientationDialog = document.querySelector("#orientation-dialog");
-  document.querySelector("#accept-orientation")?.addEventListener("click", () => {
-    try {
-      sessionStorage.setItem(storageKeys.orientation, "seen");
-    } catch {
-      // No persistence required.
-    }
-  });
-  orientationDialog?.querySelector("a[href^='#']")?.addEventListener("click", () => {
-    orientationDialog.close();
-  });
-
-  window.setTimeout(() => {
-    let seen = false;
-    try {
-      seen = sessionStorage.getItem(storageKeys.orientation) === "seen";
-    } catch {
-      seen = false;
-    }
-    if (!seen && orientationDialog && typeof orientationDialog.showModal === "function") {
-      orientationDialog.showModal();
-    }
-  }, 360);
-
-  // Motion control.
-  function applyMotionMode() {
-    document.body.classList.toggle("still-mode", stillMode);
-    motionToggle?.setAttribute("aria-pressed", String(stillMode));
-    const label = motionToggle?.querySelector("span:last-child");
-    if (label) label.textContent = stillMode ? msg("motion.enable") : msg("motion.still");
-
-    if (heroVideo) {
-      if (stillMode) {
-        heroVideo.pause();
-      } else {
-        heroVideo.play().catch(() => {
-          // The poster is a complete fallback if autoplay is blocked.
-        });
+      const index = Number(button.dataset.quizChoice);
+      const choice = choices[index] || {};
+      const correct = button.dataset.correct === "true" || choice.correct === true;
+      const card = button.closest("[data-quiz-card]");
+      $$("[data-quiz-choice]", card).forEach((candidate) => candidate.classList.remove("is-correct", "is-incorrect"));
+      button.classList.add(correct ? "is-correct" : "is-incorrect");
+      $(".exercise-feedback", card).textContent = choice.feedback || (correct ? quiz.success || ui("correct") : ui("tryAgain"));
+      if (correct) {
+        activeProgress().quizzes[keyFor(id)] = true;
+        $(".practice-state", card).textContent = "✓";
+        persist();
+        updateProgress();
       }
-    }
-  }
-
-  motionToggle?.addEventListener("click", () => {
-    stillMode = !stillMode;
-    applyMotionMode();
-    window.requestAnimationFrame(refreshCanvas);
-    announce(stillMode ? msg("motion.paused") : msg("motion.enabled"));
-  });
-  prefersReducedMotion.addEventListener?.("change", (event) => {
-    if (event.matches) {
-      stillMode = true;
-      applyMotionMode();
-      window.requestAnimationFrame(refreshCanvas);
-    }
-  });
-  applyMotionMode();
-
-  // Gate I: sixteen neutral study objects.
-  const shellGrid = document.querySelector("#shell-grid");
-  const shellStage = shellGrid?.closest(".shell-stage");
-  const shellStates = Array.from({ length: 16 }, () => "unset");
-  let setA = null;
-  let setB = null;
-
-  function stateLabel(state) {
-    if (state === "a") return msg("shell.stateA");
-    if (state === "b") return msg("shell.stateB");
-    return msg("shell.unset");
-  }
-
-  function nextState(state) {
-    if (state === "unset") return "a";
-    if (state === "a") return "b";
-    return "unset";
-  }
-
-  function positionShells() {
-    if (!shellGrid || !shellStage) return;
-    const radius = Math.max(104, Math.min(shellStage.clientWidth * 0.41, 206));
-    [...shellGrid.children].forEach((button, index) => {
-      const angle = -Math.PI / 2 + (index * 2 * Math.PI) / 16;
-      button.style.setProperty("--x", `${Math.cos(angle) * radius}px`);
-      button.style.setProperty("--y", `${Math.sin(angle) * radius}px`);
     });
-  }
-
-  function renderShell(index) {
-    const button = shellGrid?.children[index];
-    if (!button) return;
-    const state = shellStates[index];
-    button.dataset.state = state;
-    button.setAttribute("aria-label", msg("shell.objectAria", { index: index + 1, state: stateLabel(state) }));
-    button.title = msg("shell.objectTitle", { index: index + 1, state: stateLabel(state) });
-  }
-
-  function shellMetrics(states) {
-    const aCount = states.filter((state) => state === "a").length;
-    const unset = states.filter((state) => state === "unset").length;
-    const bits = states.map((state) => (state === "a" ? "1" : state === "b" ? "0" : "–")).join("");
-    const transitions = states.slice(1).reduce((sum, state, index) => {
-      if (state === "unset" || states[index] === "unset") return sum;
-      return sum + Number(state !== states[index]);
-    }, 0);
-    return { aCount, unset, bits, transitions };
-  }
-
-  function updateShellReadout() {
-    const metrics = shellMetrics(shellStates);
-    document.querySelector("#orientation-a-count").textContent = String(metrics.aCount);
-    document.querySelector("#unset-count").textContent = msg("shell.unsetCount", { count: metrics.unset });
-    document.querySelector("#shell-status").textContent = metrics.unset
-      ? msg(metrics.unset === 1 ? "shell.remainingOne" : "shell.remainingMany", { count: metrics.unset })
-      : msg("shell.completePattern", { pattern: metrics.bits });
-  }
-
-  function updatePairLedger(silent = false) {
-    const aValue = document.querySelector("#throw-a-value");
-    const bValue = document.querySelector("#throw-b-value");
-    const pairValue = document.querySelector("#pair-value");
-    const pairIndex = document.querySelector("#pair-index");
-    aValue.textContent = setA ? String(setA.aCount) : "—";
-    bValue.textContent = setB ? String(setB.aCount) : "—";
-
-    if (setA && setB) {
-      const index = setA.aCount * 17 + setB.aCount;
-      pairValue.textContent = `(${setA.aCount}, ${setB.aCount})`;
-      pairIndex.textContent = String(index);
-      document.querySelector("#shell-status").textContent = msg("shell.pairStatus", { index });
-      markTask("form");
-      if (!silent) announce(msg("shell.pairAnnounce", { a: setA.aCount, b: setB.aCount }));
-    } else {
-      pairValue.textContent = "—";
-      pairIndex.textContent = "—";
-    }
-  }
-
-  if (shellGrid) {
-    shellStates.forEach((_, index) => {
-      const button = document.createElement("button");
-      button.type = "button";
-      button.className = "study-shell";
-      button.dataset.state = "unset";
-      button.addEventListener("click", () => {
-        shellStates[index] = nextState(shellStates[index]);
-        renderShell(index);
-        updateShellReadout();
-      });
-      shellGrid.append(button);
-      renderShell(index);
-    });
-  }
-
-  window.addEventListener("resize", positionShells, { passive: true });
-  window.requestAnimationFrame(positionShells);
-
-  document.querySelector("#randomize-shells")?.addEventListener("click", () => {
-    const random = new Uint8Array(16);
-    window.crypto.getRandomValues(random);
-    random.forEach((value, index) => {
-      shellStates[index] = value % 2 === 0 ? "a" : "b";
-      renderShell(index);
-    });
-    updateShellReadout();
-    announce(msg("shell.simulated"));
   });
 
-  document.querySelector("#clear-shells")?.addEventListener("click", () => {
-    shellStates.fill("unset");
-    shellStates.forEach((_, index) => renderShell(index));
-    updateShellReadout();
-    announce(msg("shell.cleared"));
+  $$("[data-exercise-option]", section).forEach((button) => {
+    button.addEventListener("click", () => {
+      const index = Number(button.dataset.exerciseOption);
+      const option = exerciseOptions[index] || {};
+      const card = button.closest("[data-exercise-card]");
+      $$("[data-exercise-option]", card).forEach((candidate) => candidate.classList.remove("is-correct"));
+      button.classList.add("is-correct");
+      $(".exercise-feedback", card).textContent = option.insight || option.feedback || exercise.feedback || ui("completedExercise");
+      activeProgress().exercises[keyFor(id)] = true;
+      $(".practice-state", card).textContent = "✓";
+      persist();
+      updateProgress();
+    });
   });
 
-  function recordSet(which) {
-    const metrics = shellMetrics(shellStates);
-    if (metrics.unset) {
-      document.querySelector("#shell-status").textContent = msg(
-        metrics.unset === 1 ? "shell.cannotRecordOne" : "shell.cannotRecordMany",
-        { which, count: metrics.unset }
-      );
-      announce(msg("shell.incompleteAnnounce", { which }));
-      return;
-    }
-    const record = { ...metrics, states: [...shellStates] };
-    if (which === "A") setA = record;
-    if (which === "B") setB = record;
-    updatePairLedger();
-  }
+  $(".reflection-check", section)?.addEventListener("click", (event) => {
+    const button = event.currentTarget;
+    const reflections = activeProgress().reflections;
+    reflections[keyFor(id)] = !reflections[keyFor(id)];
+    button.setAttribute("aria-pressed", String(reflections[keyFor(id)]));
+    $("span", button).textContent = reflections[keyFor(id)] ? "✓" : "";
+    $("b", button).textContent = reflections[keyFor(id)] ? ui("reflected") : ui("markReflected");
+    persist();
+    updateProgress();
+  });
+}
 
-  document.querySelector("#save-throw-a")?.addEventListener("click", () => recordSet("A"));
-  document.querySelector("#save-throw-b")?.addEventListener("click", () => recordSet("B"));
-  updateShellReadout();
+function findSource(reference) {
+  if (!reference) return null;
+  if (typeof reference === "object") return reference;
+  return (SITE_CONTENT.sources || []).find((source) => source.id === reference || source.url === reference)
+    || (/^https?:/.test(reference) ? { title: reference, url: reference } : null);
+}
 
-  // Gate II: transparent token demonstration and a deterministic canvas field.
-  const promptInput = document.querySelector("#prompt-input");
-  const tokenWindow = document.querySelector("#token-window");
-  const tokenCanvas = document.querySelector("#token-canvas");
-  const tokenContext = tokenCanvas?.getContext("2d");
-  let tokenPoints = [];
-  let currentTokens = [];
-  let canvasFrame = 0;
+function renderCapstone() {
+  const gates = (CAPSTONE[state.locale] || CAPSTONE.en)[state.mode];
+  $("#gate-simulation").innerHTML = gates.map((gate, index) => {
+    const key = `${state.mode}-${index}`;
+    return `<article class="gate-card ${state.gates[key] ? "is-complete" : ""}">
+      <button type="button" aria-expanded="false">
+        <span>${String(index + 1).padStart(2, "0")}</span><h3>${esc(gate[0])}</h3><b>＋</b>
+      </button>
+      <div class="gate-body"><p>${esc(gate[1])}</p><button class="quiet-button" type="button" data-complete-gate="${index}">${esc(ui("gateComplete"))}</button></div>
+    </article>`;
+  }).join("");
+  $$(".gate-card > button").forEach((button) => {
+    button.addEventListener("click", () => {
+      const card = button.closest(".gate-card");
+      const open = card.classList.toggle("is-open");
+      button.setAttribute("aria-expanded", String(open));
+      $("b", button).textContent = open ? "−" : "＋";
+    });
+  });
+  $$("[data-complete-gate]").forEach((button) => {
+    button.addEventListener("click", () => {
+      const key = `${state.mode}-${button.dataset.completeGate}`;
+      state.gates[key] = true;
+      button.closest(".gate-card").classList.add("is-complete");
+      persist();
+    });
+  });
+}
 
-  function splitIntoUnits(text) {
-    const normalized = text.normalize("NFC");
-    try {
-      return normalized.match(/[\p{L}\p{M}]+(?:['’][\p{L}\p{M}]+)*|\p{N}+|[^\s\p{L}\p{M}\p{N}]/gu) || [];
-    } catch {
-      return normalized.match(/[A-Za-z0-9]+|[^\sA-Za-z0-9]/g) || [];
-    }
-  }
+function updateProgress() {
+  const total = Math.max(1, (SITE_CONTENT.lessons || []).length);
+  const count = completedCount();
+  const percent = Math.round((count / total) * 100);
+  $("#header-progress-fill").style.width = `${percent}%`;
+  $("#header-progress-value").textContent = `${percent}%`;
+  $("#completion-fill").style.width = `${percent}%`;
+  $("#completion-value").textContent = `${count} / ${total}`;
+  renderNavigation();
+}
 
-  function fnv1a(text) {
-    let hash = 0x811c9dc5;
-    for (const character of text) {
-      hash ^= character.codePointAt(0);
-      hash = Math.imul(hash, 0x01000193);
-    }
-    return hash >>> 0;
-  }
+function renderMethod() {
+  const records = (METHOD[state.locale] || METHOD.en)[state.mode];
+  $("#method-content").innerHTML = records.map((record) => `
+    <article class="method-card"><h3>${esc(record[0])}</h3><p>${esc(record[1])}</p></article>
+  `).join("");
+}
 
-  function tokenVector(token, index) {
-    const hash = fnv1a(`${index}:${token}`);
-    return {
-      token,
-      hash,
-      xRatio: ((hash & 0xffff) / 0xffff) * 0.74 + 0.13,
-      yRatio: (((hash >>> 16) & 0xffff) / 0xffff) * 0.66 + 0.17,
-      phase: ((hash % 628) / 100),
-      size: 2.2 + ((hash >>> 8) % 4)
+function sourceLabel(source) {
+  return source.title?.[state.locale] || source.title?.en || source.title || source.name || source.url;
+}
+
+function localizedEntry(entry) {
+  const local = entry.content?.[state.locale] || entry[state.locale] || entry.content?.en || entry.en || entry;
+  return typeof local === "string" ? { definition: local } : local;
+}
+
+function renderModeAtlas() {
+  const root = $("#mode-atlas-root");
+  if (state.mode === "spiritual") {
+    const headings = {
+      en: ["Public constellation", "Sixteen profiles, held in relationship", "These are public teaching lenses—not personality types, complete identities, or literal portraits. Names, narratives, and emphases vary across language, place, nation, and house.", "Optional bridge to Christianity", "A comparison can open a door only when its difference and history remain visible."],
+      es: ["Constelación pública", "Dieciséis perfiles en relación", "Son lentes públicos de aprendizaje, no tipos de personalidad, identidades completas ni retratos literales. Los nombres, relatos y énfasis varían según lengua, lugar, nación y casa.", "Puente opcional al cristianismo", "Una comparación abre una puerta solo si su diferencia y su historia permanecen visibles."],
+      "pt-BR": ["Constelação pública", "Dezesseis perfis em relação", "São lentes públicas de aprendizagem — não tipos de personalidade, identidades completas ou retratos literais. Nomes, narrativas e ênfases variam por língua, lugar, nação e casa.", "Ponte opcional com o cristianismo", "Uma comparação abre uma porta somente quando sua diferença e sua história permanecem visíveis."],
+      it: ["Costellazione pubblica", "Sedici profili in relazione", "Sono prospettive pubbliche di apprendimento, non tipi di personalità, identità complete o ritratti letterali. Nomi, racconti ed enfasi variano per lingua, luogo, nazione e casa.", "Ponte facoltativo con il cristianesimo", "Un confronto apre una porta solo se differenza e storia restano visibili."]
     };
+    const words = headings[state.locale] || headings.en;
+    const profiles = SITE_CONTENT.orishas || [];
+    const comparisons = SITE_CONTENT.comparisons || [];
+    root.innerHTML = `
+      <section class="profile-atlas" id="profiles" aria-labelledby="profiles-title">
+        <header class="atlas-heading">
+          <p class="micro-label">${esc(words[0])}</p>
+          <h2 id="profiles-title">${esc(words[1])}</h2>
+          <p>${esc(words[2])}</p>
+        </header>
+        <div class="profile-grid">
+          ${profiles.map((profile, index) => {
+            const copy = localizedEntry(profile);
+            return `<article class="profile-card">
+              <figure class="profile-art">
+                <img src="assets/images/orishas/${ORISHA_ARTWORK[index]}" alt="" width="720" height="720" loading="lazy" decoding="async">
+                <figcaption>${esc(ui("artLabel"))}</figcaption>
+              </figure>
+              <p>${String(index + 1).padStart(2, "0")}</p>
+              <h3>${esc(copy.name || profile.name || copy.term)}</h3>
+              <p>${esc(copy.lens || copy.description || copy.definition || "")}</p>
+              <aside>${esc(copy.guardrail || copy.boundary || copy.variation || "")}</aside>
+            </article>`;
+          }).join("")}
+        </div>
+      </section>
+      <section class="comparison-bridge" id="comparisons" aria-labelledby="comparisons-title">
+        <header class="atlas-heading">
+          <p class="micro-label">${esc(words[3])}</p>
+          <h2 id="comparisons-title">${esc(words[4])}</h2>
+        </header>
+        <div class="comparison-list">
+          ${comparisons.map((comparison) => {
+            const copy = localizedEntry(comparison);
+            return `<details class="comparison-card">
+              <summary><strong>${esc(copy.concept || comparison.concept || copy.term || copy.title)}</strong><span>＋</span></summary>
+              <div>
+                <p><b>${esc(({ en: "Useful bridge", es: "Puente útil", "pt-BR": "Ponte útil", it: "Ponte utile" }[state.locale]))}</b>${esc(copy.bridge || copy.similarity || "")}</p>
+                <p><b>${esc(({ en: "Critical difference", es: "Diferencia crítica", "pt-BR": "Diferença crítica", it: "Differenza critica" }[state.locale]))}</b>${esc(copy.difference || copy.warning || copy.nonEquivalence || "")}</p>
+                ${copy.context ? `<p><b>${esc(({ en: "Historical context", es: "Contexto histórico", "pt-BR": "Contexto histórico", it: "Contesto storico" }[state.locale]))}</b>${esc(copy.context)}</p>` : ""}
+              </div>
+            </details>`;
+          }).join("")}
+        </div>
+      </section>`;
+    return;
   }
 
-  function renderTokenWindow(tokens) {
-    currentTokens = [...tokens];
-    tokenWindow.replaceChildren();
-    const loaded = tokens.slice(0, CONTEXT_LIMIT);
-    for (let index = 0; index < CONTEXT_LIMIT; index += 1) {
-      const chip = document.createElement("div");
-      chip.className = "token-chip";
-      if (loaded[index]) {
-        const text = document.createElement("span");
-        text.textContent = loaded[index];
-        chip.append(text);
-        chip.title = msg("token.unitTitle", { index: index + 1, token: loaded[index] });
-      } else {
-        chip.classList.add("empty-token");
-        chip.setAttribute("aria-hidden", "true");
-      }
-      tokenWindow.append(chip);
-    }
-
-    document.querySelector("#context-used").textContent = String(loaded.length);
-    document.querySelector("#token-total").textContent = String(tokens.length);
-    document.querySelector("#token-loaded").textContent = String(loaded.length);
-    document.querySelector("#token-overflow").textContent = String(Math.max(0, tokens.length - CONTEXT_LIMIT));
-    tokenPoints = loaded.map(tokenVector);
-  }
-
-  function tokenizeCurrentText() {
-    const tokens = splitIntoUnits(promptInput.value.trim());
-    renderTokenWindow(tokens);
-    if (tokens.length) {
-      markTask("code");
-      announce(msg(tokens.length === 1 ? "token.foundOne" : "token.foundMany", {
-        count: tokens.length,
-        loaded: Math.min(tokens.length, CONTEXT_LIMIT)
-      }));
-    } else {
-      announce(msg("token.none"));
-    }
-  }
-
-  document.querySelector("#tokenize-button")?.addEventListener("click", tokenizeCurrentText);
-  promptInput?.addEventListener("keydown", (event) => {
-    if ((event.metaKey || event.ctrlKey) && event.key === "Enter") tokenizeCurrentText();
-  });
-  document.querySelector("#clear-prompt")?.addEventListener("click", () => {
-    promptInput.value = "";
-    renderTokenWindow([]);
-    promptInput.focus();
-    announce(msg("token.cleared"));
-  });
-
-  function sizeCanvas() {
-    if (!tokenCanvas || !tokenContext) return;
-    const rect = tokenCanvas.getBoundingClientRect();
-    const ratio = Math.min(window.devicePixelRatio || 1, 2);
-    tokenCanvas.width = Math.max(1, Math.floor(rect.width * ratio));
-    tokenCanvas.height = Math.max(1, Math.floor(rect.height * ratio));
-    tokenContext.setTransform(ratio, 0, 0, ratio, 0, 0);
-  }
-
-  function drawTokenField(time = 0) {
-    if (!tokenCanvas || !tokenContext) return;
-    const width = tokenCanvas.clientWidth;
-    const height = tokenCanvas.clientHeight;
-    tokenContext.clearRect(0, 0, width, height);
-
-    const resolved = tokenPoints.map((point) => {
-      const drift = stillMode ? 0 : Math.sin(time * 0.00035 + point.phase) * 8;
-      return { ...point, x: point.xRatio * width + drift, y: point.yRatio * height - drift * 0.35 };
-    });
-
-    tokenContext.lineWidth = 0.7;
-    resolved.forEach((point, index) => {
-      for (let otherIndex = index + 1; otherIndex < resolved.length; otherIndex += 1) {
-        const other = resolved[otherIndex];
-        const distance = Math.hypot(point.x - other.x, point.y - other.y);
-        if (distance < 165) {
-          tokenContext.strokeStyle = `rgba(111, 157, 148, ${Math.max(0.03, 0.24 - distance / 850)})`;
-          tokenContext.beginPath();
-          tokenContext.moveTo(point.x, point.y);
-          tokenContext.lineTo(other.x, other.y);
-          tokenContext.stroke();
-        }
-      }
-    });
-
-    resolved.forEach((point) => {
-      tokenContext.fillStyle = point.hash % 3 === 0 ? "rgba(183, 139, 69, 0.7)" : "rgba(233, 226, 208, 0.58)";
-      tokenContext.beginPath();
-      tokenContext.arc(point.x, point.y, point.size, 0, Math.PI * 2);
-      tokenContext.fill();
-    });
-
-    if (!stillMode) canvasFrame = window.requestAnimationFrame(drawTokenField);
-  }
-
-  function refreshCanvas() {
-    window.cancelAnimationFrame(canvasFrame);
-    sizeCanvas();
-    drawTokenField(performance.now());
-  }
-
-  window.addEventListener("resize", refreshCanvas, { passive: true });
-  refreshCanvas();
-
-  // Attention laboratory.
-  const temperatureInput = document.querySelector("#temperature");
-  const temperatureOutput = document.querySelector("#temperature-value");
-
-  function multiplyVectorMatrix(vector, matrix) {
-    return matrix[0].map((_, column) => vector.reduce((sum, value, row) => sum + value * matrix[row][column], 0));
-  }
-
-  function dot(a, b) {
-    return a.reduce((sum, value, index) => sum + value * b[index], 0);
-  }
-
-  function softmax(values) {
-    const maximum = Math.max(...values);
-    const exponentials = values.map((value) => Math.exp(value - maximum));
-    const total = exponentials.reduce((sum, value) => sum + value, 0);
-    return exponentials.map((value) => value / total);
-  }
-
-  function featureVector(record, fallback) {
-    if (!record) return fallback;
-    return [record.aCount / 16, record.transitions / 15, record.aCount % 2];
-  }
-
-  function runAttention(shouldAnnounce = true) {
-    const x = [
-      featureVector(setA, [0.25, 0.6, 0]),
-      featureVector(setB, [0.75, 0.27, 1])
-    ];
-    const wQ = [[0.8, -0.2], [0.35, 0.7], [-0.45, 0.3]];
-    const wK = [[0.55, 0.5], [-0.25, 0.8], [0.6, -0.15]];
-    const wV = [[0.7, 0.15], [0.1, 0.9], [-0.2, 0.45]];
-    const q = x.map((row) => multiplyVectorMatrix(row, wQ));
-    const k = x.map((row) => multiplyVectorMatrix(row, wK));
-    const v = x.map((row) => multiplyVectorMatrix(row, wV));
-    const temperature = Number(temperatureInput.value);
-    const scores = q.map((query) => k.map((key) => dot(query, key) / Math.sqrt(2) / temperature));
-    const weights = scores.map(softmax);
-    const context = weights.map((row) => [
-      row[0] * v[0][0] + row[1] * v[1][0],
-      row[0] * v[0][1] + row[1] * v[1][1]
-    ]);
-
-    const output = document.querySelector("#matrix-output");
-    output.replaceChildren();
-    weights.forEach((row, rowIndex) => {
-      row.forEach((weight, columnIndex) => {
-        const cell = document.createElement("div");
-        cell.className = "matrix-cell";
-        cell.style.setProperty("--weight", String(weight));
-        const label = document.createElement("span");
-        label.textContent = msg("attention.cellLabel", {
-          row: rowIndex + 1,
-          column: columnIndex + 1,
-          a: rowIndex + 1,
-          b: columnIndex + 1
-        });
-        const value = document.createElement("strong");
-        value.textContent = weight.toFixed(3);
-        cell.append(label, value);
-        output.append(cell);
-      });
-    });
-    output.setAttribute("aria-label", msg("attention.aria", {
-      weights: weights.flat().map((weight) => weight.toFixed(3)).join(", "),
-      vectors: context.flat().map((value) => value.toFixed(3)).join(", ")
-    }));
-    markTask("attention");
-    if (shouldAnnounce) announce(msg("attention.calculated"));
-  }
-
-  temperatureInput?.addEventListener("input", () => {
-    temperatureOutput.textContent = Number(temperatureInput.value).toFixed(1);
-  });
-  document.querySelector("#run-attention")?.addEventListener("click", () => runAttention(true));
-
-  // Emanation atlas: histories remain separate.
-  const atlasData = {
-    kabbalah: {
-      label: "Kabbalistic histories",
-      title: "Thirty-two typed paths are not one timeless diagram",
-      cardinality: "10 + 22 = 32",
-      body: "Sefer Yetzirah presents ten sefirot belimah and twenty-two foundational letters. The familiar fixed Tree should not be projected unchanged backward: medieval and early-modern ilanot form a varied diagram genre.",
-      boundary: "Keter is not Ein Sof; neither is an odù, Olódùmarè, wuji, or a latent vector.",
-      count: 32,
-      columns: 8,
-      labelUnit: (index) => (index < 10
-        ? msg("atlas.measure", { index: index + 1 })
-        : msg("atlas.letter", { index: index - 9 })),
-      typeBStart: 10
-    },
-    ifa: {
-      label: "Ifá corpus structure",
-      title: "Sixteen principal odù generate 256 ordered figures",
-      cardinality: "16 × 16 = 256",
-      body: "UNESCO describes the odù as organizing a vast, open-ended literary corpus interpreted by trained diviners. A software bit index can serialize sixteen formal patterns, but the index is not the sign’s history, verse corpus, or authority.",
-      boundary: "The 256 Ifá figure structure must not be transferred automatically to every sixteen-cowrie count procedure.",
-      count: 16,
-      columns: 4,
-      labelUnit: (index) => index.toString(2).padStart(4, "0"),
-      typeBStart: 16
-    },
-    yijing: {
-      label: "Yijing and wuji",
-      title: "Sixty-four hexagram patterns; later cosmological vocabularies",
-      cardinality: "2⁶ = 64",
-      body: "A six-line binary encoding enumerates sixty-four yin-yang patterns. Wuji, often translated as non-polarity, becomes prominent in Song cosmology and should not be treated as a lost zeroth hexagram or a machine null value.",
-      boundary: "A shared use of polarity or binary notation does not establish identity with Ifá figures or neural representations.",
-      count: 64,
-      columns: 8,
-      labelUnit: (index) => index.toString(2).padStart(6, "0"),
-      typeBStart: 32
-    }
+  const headings = {
+    en: ["Mechanism index", "Twelve observable system patterns", "Each record names a mechanism, the useful model it offers, and the capacity it still cannot provide."],
+    es: ["Índice de mecanismos", "Doce patrones observables del sistema", "Cada registro nombra un mecanismo, el modelo útil que ofrece y la capacidad que todavía no puede proporcionar."],
+    "pt-BR": ["Índice de mecanismos", "Doze padrões observáveis do sistema", "Cada registro nomeia um mecanismo, o modelo útil que oferece e a capacidade que ainda não pode fornecer."],
+    it: ["Indice dei meccanismi", "Dodici schemi osservabili del sistema", "Ogni voce indica un meccanismo, il modello utile che offre e la capacità che non può ancora fornire."]
   };
-
-  const atlasVisited = new Set();
-  let activeAtlasKey = "kabbalah";
-  let crosswalkTested = false;
-
-  function renderAtlas(key) {
-    const baseData = atlasData[key];
-    if (!baseData) return;
-    const data = i18n?.localizedAtlasData(key, baseData) || baseData;
-    activeAtlasKey = key;
-    const copy = document.querySelector("#atlas-copy");
-    const diagram = document.querySelector("#atlas-diagram");
-    copy.replaceChildren();
-    diagram.replaceChildren();
-
-    const label = document.createElement("p");
-    label.className = "mini-label";
-    label.textContent = data.label;
-    const heading = document.createElement("h3");
-    heading.textContent = data.title;
-    const cardinality = document.createElement("span");
-    cardinality.className = "cardinality";
-    cardinality.textContent = data.cardinality;
-    const body = document.createElement("p");
-    body.textContent = data.body;
-    const boundary = document.createElement("p");
-    const strong = document.createElement("strong");
-    strong.textContent = msg("atlas.boundaryLabel");
-    boundary.append(strong, data.boundary);
-    copy.append(label, heading, cardinality, body, boundary);
-
-    diagram.style.setProperty("--cols", String(data.columns));
-    for (let index = 0; index < data.count; index += 1) {
-      const unit = document.createElement("div");
-      unit.className = "atlas-unit";
-      if (index >= data.typeBStart) unit.classList.add("type-b");
-      unit.textContent = data.labelUnit(index);
-      diagram.append(unit);
-    }
-    diagram.setAttribute("aria-label", msg("atlas.diagramAria", { label: data.label, cardinality: data.cardinality }));
-
-    document.querySelectorAll("[data-atlas]").forEach((button) => {
-      const selected = button.dataset.atlas === key;
-      button.setAttribute("aria-selected", String(selected));
-      button.tabIndex = selected ? 0 : -1;
-      if (selected) document.querySelector("#atlas-panel").setAttribute("aria-labelledby", button.id);
+  const words = headings[state.locale] || headings.en;
+  const glossary = (SITE_CONTENT.aiGlossary || []).length
+    ? SITE_CONTENT.aiGlossary
+    : (SITE_CONTENT.lessons || []).map((lesson) => {
+      const copy = lessonCopy(lesson);
+      return { term: copy.title, content: { [state.locale]: { definition: copy.lede, limit: copy.limit || copy.modelLimit } } };
     });
+  root.innerHTML = `
+    <section class="system-atlas" id="system-index" aria-labelledby="system-index-title">
+      <header class="atlas-heading">
+        <p class="micro-label">${esc(words[0])}</p>
+        <h2 id="system-index-title">${esc(words[1])}</h2>
+        <p>${esc(words[2])}</p>
+      </header>
+      <div class="system-index-grid">
+        ${glossary.slice(0, 18).map((entry, index) => {
+          const copy = localizedEntry(entry);
+          return `<article>
+            <span>${String(index + 1).padStart(2, "0")}</span>
+            <h3>${esc(copy.term || entry.term || copy.title)}</h3>
+            <p>${esc(copy.definition || copy.description || "")}</p>
+            <aside><b>${esc(ui("modelLimit"))}</b>${esc(copy.limit || copy.boundary || copy.whatCannotSupply || "")}</aside>
+          </article>`;
+        }).join("")}
+      </div>
+    </section>`;
+}
 
-    atlasVisited.add(key);
-    if (atlasVisited.size === Object.keys(atlasData).length) markTask("emanation");
-  }
-
-  document.querySelectorAll("[data-atlas]").forEach((button) => {
-    button.addEventListener("click", () => renderAtlas(button.dataset.atlas));
-    button.addEventListener("keydown", (event) => {
-      if (!['ArrowLeft', 'ArrowRight'].includes(event.key)) return;
-      const buttons = [...document.querySelectorAll("[data-atlas]")];
-      const current = buttons.indexOf(button);
-      const direction = event.key === "ArrowRight" ? 1 : -1;
-      const next = buttons[(current + direction + buttons.length) % buttons.length];
-      next.focus();
-      renderAtlas(next.dataset.atlas);
+function buildSearchItems() {
+  const items = [];
+  (SITE_CONTENT.lessons || []).forEach((lesson, index) => {
+    const copy = lessonCopy(lesson);
+    items.push({
+      type: "lessons", title: copy.title, description: copy.lede || arrayOf(copy.body)[0] || "",
+      href: `#lesson-${String(index + 1).padStart(2, "0")}`, search: `${copy.title} ${copy.lede} ${arrayOf(copy.concepts).join(" ")}`
     });
   });
-  renderAtlas("kabbalah");
-
-  document.querySelector("#test-crosswalk")?.addEventListener("click", () => {
-    const result = document.querySelector("#crosswalk-result");
-    result.textContent = msg("crosswalk.result");
-    crosswalkTested = true;
-    markTask("crosswalk");
-    announce(msg("crosswalk.announce"));
-  });
-
-  // Gate III: responsibility layers.
-  const authoritySelected = new Set();
-  function updateAuthorityReveal(shouldAnnounce = false) {
-    const reveal = document.querySelector("#authority-reveal");
-    if (!reveal) return;
-    if (authoritySelected.size === 3) {
-      reveal.innerHTML = msg("authority.completeHtml");
-      markTask("authority");
-      if (shouldAnnounce) announce(msg("authority.completeAnnounce"));
-    } else {
-      const remaining = 3 - authoritySelected.size;
-      reveal.textContent = msg(
-        remaining === 1 ? "authority.remainingOne" : "authority.remainingMany",
-        { count: remaining }
-      );
-    }
-  }
-
-  document.querySelectorAll("[data-authority]").forEach((button) => {
-    button.addEventListener("click", () => {
-      const key = button.dataset.authority;
-      if (authoritySelected.has(key)) authoritySelected.delete(key);
-      else authoritySelected.add(key);
-      button.setAttribute("aria-pressed", String(authoritySelected.has(key)));
-
-      updateAuthorityReveal(true);
+  if (state.mode === "spiritual") {
+    (SITE_CONTENT.glossary || []).forEach((entry) => {
+      const copy = localizedEntry(entry);
+      items.push({ type: "glossary", title: copy.term || entry.term, description: copy.definition || copy.description || "", search: `${copy.term || entry.term} ${copy.definition || ""}` });
     });
-  });
-
-  // Comparative lexicon.
-  const lexicon = [
-    {
-      term: "Token",
-      portuguese: "token",
-      groups: ["ai", "yoruba"],
-      technical: "A discrete unit produced by a model-specific tokenizer and represented by an integer identifier.",
-      comparison: "Ọfọ̀ is a source-described verbal genre; it is not a token.",
-      analogy: "Both analyses may attend closely to segmentation, sequence, and exact form.",
-      boundary: "A token is not a sacred phoneme, word of power, or quantum of àṣẹ."
-    },
-    {
-      term: "Model weight",
-      portuguese: "peso do modelo",
-      groups: ["ai", "yoruba"],
-      technical: "A trained numerical parameter used by a network's computation.",
-      comparison: "Àṣẹ / axé is discussed in cited scholarship as creative, effective, or vital force in situated Yorùbá and Candomblé relations.",
-      analogy: "At a very abstract level, both may be discussed as conditions affecting what can occur.",
-      boundary: "Weights are not distributed axé; signs, gradients, and norms do not measure sacred force."
-    },
-    {
-      term: "Parameter space",
-      portuguese: "espaço de parâmetros",
-      groups: ["ai", "yoruba", "kabbalah"],
-      technical: "The finite-dimensional set of possible parameter settings for one specified model architecture.",
-      comparison: "Awo concerns secret, mystery, initiated knowledge, and governed disclosure in situated sources; Ein Sof is a theological term, not a model tensor.",
-      analogy: "An observer may lack access to or understanding of either domain.",
-      boundary: "Parameter space is not a primordial void, Olódùmarè, Ein Sof, or a store of every possible world."
-    },
-    {
-      term: "Hidden state",
-      portuguese: "estado oculto",
-      groups: ["ai", "yoruba"],
-      technical: "A context-dependent activation vector at a token position and model layer.",
-      comparison: "Awo / segredo concerns sacred secrecy, trust, and permission; 'hidden' in a model only means internal to its interface.",
-      analogy: "Both prompt questions about inspection, interpretation, and responsible disclosure.",
-      boundary: "A hidden state is not initiated knowledge, and sacred secrecy is not failed interpretability."
-    },
-    {
-      term: "Latent representation",
-      portuguese: "representação latente",
-      groups: ["ai", "yoruba", "kabbalah"],
-      technical: "An internal numerical representation learned or computed for a task; a Transformer has several such spaces, not one universal latent realm.",
-      comparison: "No exact religious equivalent is documented.",
-      analogy: "It can serve as a clearly marked artistic metaphor for relation or unexpressed potential.",
-      boundary: "It is not a cosmic matrix, spirit realm, all histories, or the ontology of odù or sefirot."
-    },
-    {
-      term: "Prompt",
-      portuguese: "prompt; instrução de entrada",
-      groups: ["ai", "yoruba"],
-      technical: "Input supplied at inference to condition model activations and output probabilities while parameters normally remain fixed.",
-      comparison: "Ọfọ̀ and source-described ọfọ̀ àfọ̀ṣẹ concern consequential, formulaically ordered speech within religious-cultural authority.",
-      analogy: "Wording, sequence, context, and competent use affect consequences in both domains.",
-      boundary: "A prompt is not an incantation; ordinary prompting does not change trained weights or acquire ritual authority."
-    },
-    {
-      term: "Context window",
-      portuguese: "janela de contexto",
-      groups: ["ai", "yoruba"],
-      technical: "The maximum token sequence directly processed under a model invocation and architecture.",
-      comparison: "Ọpọ́n Ifá is the materially and ritually situated Ifá divination tray documented by museum sources.",
-      analogy: "Each can be described pedagogically as a bounded arena in which ordered signs become available.",
-      boundary: "A token window is not a tray; capacity does not measure ritual scope; 'Alá' is not substituted for ọpọ́n Ifá."
-    },
-    {
-      term: "Self-attention",
-      portuguese: "autoatenção",
-      groups: ["ai", "yoruba"],
-      technical: "Input-dependent weighting of value vectors using softmax-normalized query-key scores at every token position.",
-      comparison: "A sourced two-result protocol may combine ordered outcomes under a versioned rule set.",
-      analogy: "Both may be visualized as relations among contextual elements.",
-      boundary: "Set A is not Q, set B is not K, guidance is not V, and a lookup matrix is not attention."
-    },
-    {
-      term: "Inference",
-      portuguese: "inferência",
-      groups: ["ai", "yoruba"],
-      technical: "Evaluation of a trained model on supplied inputs, normally with learned parameters fixed.",
-      comparison: "Divinatory interpretation is performed by authorized human practitioners within a tradition.",
-      analogy: "Both transform a presented sign context into a context-sensitive result only at a very high level.",
-      boundary: "Model inference is not divination, revelation, consultation, or spiritual intervention."
-    },
-    {
-      term: "Generated output",
-      portuguese: "saída gerada",
-      groups: ["ai", "yoruba"],
-      technical: "Text or another artifact produced by model inference and decoding.",
-      comparison: "Ẹsẹ̀ denotes verse within the Ifá corpus in UNESCO's description.",
-      analogy: "Generated commentary can cite and discuss public, rights-cleared source material.",
-      boundary: "Generated prose is never labeled ẹsẹ̀, oral testimony, revelation, or traditional verse."
-    },
-    {
-      term: "AI alignment / RLHF",
-      portuguese: "alinhamento de IA / aprendizagem por reforço com feedback humano",
-      groups: ["ai", "yoruba"],
-      technical: "Engineering and governance methods intended to shape system behavior relative to specified values, preferences, constraints, and risks.",
-      comparison: "Ẹbọ/ebó and Aláfíà belong to source- and community-specific religious practices or classifications.",
-      analogy: "Both vocabularies can raise questions about desired and harmful outcomes.",
-      boundary: "RLHF is not ebó; AI alignment is not Aláfíà; training loss is not spiritual adversity."
-    },
-    {
-      term: "Emergent capability",
-      portuguese: "capacidade emergente",
-      groups: ["ai", "yoruba"],
-      technical: "A measured ability reported as absent in smaller models and present in larger ones; apparent thresholds can depend on metrics and sampling.",
-      comparison: "Òrìṣà and Vodun are religious beings or powers in their traditions, not capability labels.",
-      analogy: "Complexity can exceed an observer's prior expectations in many domains.",
-      boundary: "A benchmark threshold is not manifestation, possession, incarnation, or the birth of a deity."
-    },
-    {
-      term: "Odù",
-      portuguese: "odù",
-      groups: ["yoruba"],
-      technical: "Not an AI term. UNESCO describes the odù as signs/divisions organizing the Ifá corpus, with sixteen principal and 256 composite figures.",
-      comparison: "Software may assign a source-governed identifier or one-hot vector to a public catalog record.",
-      analogy: "An index can preserve identity and ordering inside one declared database version.",
-      boundary: "An embedding is not the odù; geometric distance does not prove spiritual, semantic, or historical proximity."
-    },
-    {
-      term: "Àṣẹ / axé",
-      portuguese: "axé",
-      groups: ["yoruba"],
-      technical: "Not a machine variable. Scholarship describes situated creative/effective or vital force across Yorùbá and Brazilian histories.",
-      comparison: "Models have measurable power consumption, parameters, activations, and outputs.",
-      analogy: "The contrast invites inquiry into efficacy, embodiment, permission, and responsibility.",
-      boundary: "Electrical energy, model capacity, confidence, and weight magnitude are not measurements of àṣẹ or axé."
-    },
-    {
-      term: "Awo / segredo",
-      portuguese: "segredo; mistério",
-      groups: ["yoruba"],
-      technical: "Not an interpretability metric. The term's documented fields include mystery, secret, initiated knowledge, and governed disclosure.",
-      comparison: "Neural systems can be hard to interpret; institutions can also conceal training data or design facts.",
-      analogy: "Both require claims about who knows what, who may disclose it, and why.",
-      boundary: "Sacred secrecy is not defective explainability, and technical opacity does not authorize extraction of restricted knowledge."
-    },
-    {
-      term: "Sefirot",
-      portuguese: "sefirot",
-      groups: ["kabbalah"],
-      technical: "Not network nodes. Sefer Yetzirah's ten sefirot belimah and medieval Kabbalah's dynamic divine powers belong to distinct historical strata.",
-      comparison: "Networks and later ilanot both use nodes and relations as visual organization.",
-      analogy: "Diagrammatic form can support memory, contemplation, and analysis.",
-      boundary: "A sefirah is not a hidden layer, attention head, weight cluster, odù, or machine coordinate."
-    },
-    {
-      term: "Gematria",
-      portuguese: "guematria",
-      groups: ["kabbalah", "ai"],
-      technical: "A family of rule-governed mappings from Hebrew letters or strings to scalar numerical values.",
-      comparison: "Tokenizers map strings to ID sequences; embeddings map items to vectors.",
-      analogy: "All make language available to numeric operations under declared conventions.",
-      boundary: "Equal gematria sums are not cosine similarity; token IDs are not meanings; vectors are not theological equivalence."
-    },
-    {
-      term: "Tzimtzum",
-      portuguese: "tzimtzum; contração",
-      groups: ["kabbalah", "ai"],
-      technical: "A Lurianic theological account of divine contraction or concealment that enables differentiated existence.",
-      comparison: "Engineering uses constraints, finite dimensions, regularization, compression, and quantization.",
-      analogy: "Both can provoke reflection on limitation as a condition for form.",
-      boundary: "Tzimtzum is not dimensionality reduction, pruning, quantization, context limitation, or a training algorithm."
-    },
-    {
-      term: "Golem",
-      portuguese: "golem",
-      groups: ["kabbalah", "ai"],
-      technical: "A changing archive of Jewish textual, esoteric, folkloric, and literary figures; not a historical AI design specification.",
-      comparison: "Modern automation delegates action to artifacts that may exceed a maker's immediate control.",
-      analogy: "The ethical parallel concerns maker responsibility and force without judgment.",
-      boundary: "The Prague legend is not a documented sixteenth-century event; AI does not technically descend from a clay automaton."
-    },
-    {
-      term: "Adam Kadmon",
-      portuguese: "Adam Kadmon; Homem Primordial",
-      groups: ["kabbalah", "ai"],
-      technical: "A primordial anthropomorphic configuration in Lurianic cosmology, distinct from the biblical Adam and from a golem.",
-      comparison: "Some ASI narratives imagine comprehensive intelligence integrating many domains.",
-      analogy: "Comparative mythology may study both as totalizing macrohuman images.",
-      boundary: "No evidence here shows that technology leaders are consciously or unconsciously reconstructing Adam Kadmon."
-    }
-  ];
-
-  const lexiconPtBR = {
-    "Token": {
-      technicalPt: "Uma unidade discreta produzida por um tokenizador específico de cada modelo e representada por um identificador inteiro.",
-      comparisonPt: "Ọfọ̀ é um gênero verbal descrito nas fontes; não é um token.",
-      analogyPt: "Em ambos os domínios, a análise pode dedicar atenção à segmentação, à sequência e à forma exata.",
-      boundaryPt: "Um token não é um fonema sagrado, uma palavra de poder nem uma unidade de àṣẹ."
-    },
-    "Model weight": {
-      technicalPt: "Um parâmetro numérico treinado, usado na computação de uma rede neural.",
-      comparisonPt: "Àṣẹ / axé é descrito na bibliografia citada como força criativa, eficaz ou vital em relações situadas Yorùbá e do Candomblé.",
-      analogyPt: "Em um nível muito abstrato, ambos podem ser discutidos como condições que afetam o que pode ocorrer.",
-      boundaryPt: "Pesos não são axé distribuído; seus sinais, gradientes e normas não medem força sagrada."
-    },
-    "Parameter space": {
-      technicalPt: "O espaço finito-dimensional de todas as configurações possíveis dos parâmetros de uma arquitetura de modelo específica.",
-      comparisonPt: "Awo diz respeito a segredo, mistério, conhecimento reservado à iniciação e divulgação submetida à autoridade; Ein Sof é um termo teológico, não um tensor de modelo.",
-      analogyPt: "Um observador pode não ter acesso a nenhum dos dois domínios ou não compreendê-los.",
-      boundaryPt: "O espaço de parâmetros não é um vazio primordial, Olódùmarè, Ein Sof nem um repositório de todos os mundos possíveis."
-    },
-    "Hidden state": {
-      technicalPt: "Um vetor de ativação dependente do contexto, em determinada posição de token e camada do modelo.",
-      comparisonPt: "Awo / segredo diz respeito a segredo sagrado, confiança e permissão; em um modelo, ‘oculto’ significa apenas interno à sua interface.",
-      analogyPt: "Ambos suscitam perguntas sobre inspeção, interpretação e divulgação responsável.",
-      boundaryPt: "Um estado oculto não é conhecimento reservado à iniciação, e o segredo sagrado não é uma falha de interpretabilidade."
-    },
-    "Latent representation": {
-      technicalPt: "Uma representação numérica interna aprendida ou calculada para uma tarefa; um Transformer possui vários desses espaços, não um único domínio latente universal.",
-      comparisonPt: "Não há equivalente religioso exato documentado.",
-      analogyPt: "Pode servir como metáfora artística claramente identificada para relações não expressas ou potencialidades.",
-      boundaryPt: "Não é uma matriz cósmica, um mundo espiritual, a totalidade das histórias nem a ontologia dos odù ou das sefirot."
-    },
-    "Prompt": {
-      technicalPt: "Uma entrada fornecida durante a inferência para condicionar as ativações do modelo e as probabilidades de saída, enquanto os parâmetros normalmente permanecem fixos.",
-      comparisonPt: "Ọfọ̀ e ọfọ̀ àfọ̀ṣẹ, conforme descritos nas fontes, dizem respeito a formas de fala consequencial e formulaicamente ordenada dentro de uma autoridade religioso-cultural.",
-      analogyPt: "A formulação, a sequência, o contexto e o uso competente afetam as consequências em ambos os domínios.",
-      boundaryPt: "Um prompt não é um encantamento; a interação comum com prompts não altera os pesos treinados nem adquire autoridade ritual."
-    },
-    "Context window": {
-      technicalPt: "A sequência máxima de tokens processada diretamente em uma execução, conforme a arquitetura do modelo.",
-      comparisonPt: "Ọpọ́n Ifá é a bandeja de divinação de Ifá material e ritualmente situada, documentada por fontes museológicas.",
-      analogyPt: "Cada um pode ser descrito pedagogicamente como uma arena delimitada na qual signos ordenados se tornam disponíveis.",
-      boundaryPt: "Uma janela de tokens não é uma bandeja; sua capacidade não mede o alcance ritual; ‘Alá’ não substitui o termo documentado Ọpọ́n Ifá."
-    },
-    "Self-attention": {
-      technicalPt: "Ponderação, dependente da entrada, de vetores de valor por escores de consulta e chave normalizados com softmax em cada posição de token.",
-      comparisonPt: "Um protocolo documentado de dois resultados pode combinar desfechos ordenados segundo um conjunto de regras versionado.",
-      analogyPt: "Ambos podem ser visualizados como relações entre elementos contextualizados.",
-      boundaryPt: "O conjunto A não é Q, o conjunto B não é K, a orientação interpretativa não é V, e uma matriz de consulta não é atenção."
-    },
-    "Inference": {
-      technicalPt: "A avaliação de um modelo treinado sobre entradas fornecidas, normalmente com os parâmetros aprendidos mantidos fixos.",
-      comparisonPt: "A interpretação divinatória é realizada por praticantes humanos autorizados dentro de uma tradição.",
-      analogyPt: "Em nível muito geral, ambos transformam um contexto de signos apresentado em um resultado sensível ao contexto.",
-      boundaryPt: "A inferência de um modelo não é divinação, revelação, consulta nem intervenção espiritual."
-    },
-    "Generated output": {
-      technicalPt: "Texto ou outro artefato produzido pela inferência e pela decodificação de um modelo.",
-      comparisonPt: "Ẹsẹ̀ designa verso dentro do corpus de Ifá na descrição da UNESCO.",
-      analogyPt: "Um comentário gerado pode citar e discutir materiais públicos e devidamente licenciados.",
-      boundaryPt: "A prosa gerada nunca deve ser rotulada como ẹsẹ̀, testemunho oral, revelação ou verso tradicional."
-    },
-    "AI alignment / RLHF": {
-      technicalPt: "Métodos de engenharia e governança destinados a orientar o comportamento de sistemas segundo valores, preferências, restrições e riscos especificados.",
-      comparisonPt: "Ẹbọ/ebó e Aláfíà pertencem a práticas religiosas ou classificações específicas de cada fonte e comunidade.",
-      analogyPt: "Ambos os vocabulários podem suscitar perguntas sobre resultados desejados e prejudiciais.",
-      boundaryPt: "RLHF não é ebó; alinhamento de IA não é Aláfíà; perda de treinamento não é adversidade espiritual."
-    },
-    "Emergent capability": {
-      technicalPt: "Uma capacidade medida que é relatada como ausente em modelos menores e presente em modelos maiores; limiares aparentes podem depender da métrica e da amostragem.",
-      comparisonPt: "Òrìṣà e Vodun são seres ou poderes religiosos em suas tradições, não rótulos de capacidade computacional.",
-      analogyPt: "A complexidade pode superar as expectativas prévias de um observador em muitos domínios.",
-      boundaryPt: "Um limiar de benchmark não é manifestação, possessão, encarnação nem nascimento de uma divindade."
-    },
-    "Odù": {
-      technicalPt: "Não é um termo de IA. A UNESCO descreve os odù como signos ou divisões que organizam o corpus de Ifá, com dezesseis principais e 256 figuras compostas.",
-      comparisonPt: "Um software pode atribuir um identificador governado pela fonte ou um vetor one-hot a um registro de catálogo público.",
-      analogyPt: "Um índice pode preservar identidade e ordenação dentro de uma versão declarada de banco de dados.",
-      boundaryPt: "Um embedding não é o odù; distância geométrica não prova proximidade espiritual, semântica ou histórica."
-    },
-    "Àṣẹ / axé": {
-      technicalPt: "Não é uma variável de máquina. A bibliografia descreve força criativa, eficaz ou vital em histórias situadas Yorùbá e brasileiras.",
-      comparisonPt: "Modelos possuem consumo de energia, parâmetros, ativações e saídas mensuráveis.",
-      analogyPt: "O contraste permite examinar eficácia, corporeidade, permissão e responsabilidade.",
-      boundaryPt: "Energia elétrica, capacidade do modelo, confiança estatística e magnitude dos pesos não medem àṣẹ ou axé."
-    },
-    "Awo / segredo": {
-      technicalPt: "Não é uma métrica de interpretabilidade. Seus campos documentados incluem mistério, segredo, conhecimento reservado à iniciação e divulgação governada.",
-      comparisonPt: "Sistemas neurais podem ser difíceis de interpretar; instituições também podem ocultar dados de treinamento ou decisões de projeto.",
-      analogyPt: "Ambos exigem perguntas sobre quem sabe o quê, quem pode revelar esse conhecimento e por quê.",
-      boundaryPt: "O segredo sagrado não é explicabilidade defeituosa, e a opacidade técnica não autoriza a extração de conhecimento reservado."
-    },
-    "Sefirot": {
-      technicalPt: "Não são nós de rede. As dez sefirot belimah de Sefer Yetzirah e os poderes divinos dinâmicos da Kabbalah medieval pertencem a estratos históricos distintos.",
-      comparisonPt: "Redes e os ilanot posteriores usam nós e relações como formas de organização visual.",
-      analogyPt: "A forma diagramática pode apoiar memória, contemplação e análise.",
-      boundaryPt: "Uma sefirah não é uma camada oculta, cabeça de atenção, agrupamento de pesos, odù ou coordenada de máquina."
-    },
-    "Gematria": {
-      technicalPt: "Uma família de mapeamentos regidos por regras, de letras ou sequências hebraicas a valores numéricos escalares.",
-      comparisonPt: "Tokenizadores mapeiam cadeias de caracteres para sequências de IDs; embeddings mapeiam itens para vetores.",
-      analogyPt: "Todos tornam a linguagem disponível para operações numéricas segundo convenções declaradas.",
-      boundaryPt: "Somas iguais de gematria não são similaridade de cosseno; IDs de tokens não são significados; vetores não estabelecem equivalência teológica."
-    },
-    "Tzimtzum": {
-      technicalPt: "Um relato teológico luriano de contração ou ocultamento divino que possibilita a existência diferenciada.",
-      comparisonPt: "A engenharia utiliza restrições, dimensões finitas, regularização, compressão e quantização.",
-      analogyPt: "Ambos podem suscitar reflexão sobre a limitação como condição para a forma.",
-      boundaryPt: "Tzimtzum não é redução de dimensionalidade, poda, quantização, limitação de contexto nem algoritmo de treinamento."
-    },
-    "Golem": {
-      technicalPt: "Um conjunto histórico em transformação de figuras judaicas textuais, esotéricas, folclóricas e literárias; não uma especificação histórica de projeto de IA.",
-      comparisonPt: "A automação moderna delega ações a artefatos que podem ultrapassar o controle imediato de seus criadores.",
-      analogyPt: "O paralelo ético diz respeito à responsabilidade de quem cria e ao emprego de força sem discernimento.",
-      boundaryPt: "A lenda de Praga não é um acontecimento documentado do século XVI, e a IA não descende tecnicamente de um autômato de barro."
-    },
-    "Adam Kadmon": {
-      technicalPt: "Uma configuração antropomórfica primordial na cosmologia luriana, distinta do Adão bíblico e de um golem.",
-      comparisonPt: "Algumas narrativas sobre ASI imaginam uma inteligência abrangente que integra muitos domínios.",
-      analogyPt: "A mitologia comparada pode examinar ambos como imagens macro-humanas totalizantes.",
-      boundaryPt: "Não há evidência aqui de que líderes tecnológicos estejam reconstruindo Adam Kadmon de forma consciente ou inconsciente."
-    }
-  };
-
-  lexicon.forEach((entry) => Object.assign(entry, lexiconPtBR[entry.term]));
-
-  let activeLexiconFilter = "all";
-
-  function searchable(text) {
-    return text.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+    (SITE_CONTENT.orishas || []).forEach((entry) => {
+      const copy = localizedEntry(entry);
+      items.push({ type: "profiles", title: copy.name || entry.name, description: copy.lens || copy.description || "", search: `${copy.name || entry.name} ${copy.lens || ""} ${copy.guardrail || ""}` });
+    });
+    (SITE_CONTENT.sources || []).forEach((source) => {
+      items.push({ type: "literature", title: sourceLabel(source), description: source.note?.[state.locale] || source.note?.en || source.note || source.type || "", href: source.url, external: true, search: `${sourceLabel(source)} ${source.type || ""}` });
+    });
+  } else {
+    (SITE_CONTENT.aiGlossary || []).forEach((entry) => {
+      const copy = localizedEntry(entry);
+      items.push({ type: "glossary", title: copy.term || entry.term, description: copy.definition || "", search: `${copy.term || entry.term} ${copy.definition || ""}` });
+    });
   }
+  return items;
+}
 
-  function makeDefinition(labelKey, englishLabel, englishText, localizedText, className = "") {
-    const wrapper = document.createElement("div");
-    if (className) wrapper.className = className;
-    const term = document.createElement("dt");
-    const currentLocale = i18n?.locale || "en";
-    const localizedLabel = msg(labelKey);
-    term.textContent = currentLocale === "en" ? englishLabel : `${englishLabel} / ${localizedLabel}`;
-    const definition = document.createElement("dd");
-    const english = document.createElement("span");
-    english.lang = "en";
-    english.textContent = englishText;
-    definition.append(english);
-    if (currentLocale !== "en") {
-      const translation = document.createElement("span");
-      translation.lang = currentLocale;
-      translation.className = "definition-translation";
-      translation.textContent = localizedText || englishText;
-      definition.append(translation);
+function renderSearchFilters() {
+  const filters = state.mode === "spiritual"
+    ? ["all", "lessons", "glossary", "profiles", "literature"]
+    : ["all", "lessons", "glossary"];
+  if (!filters.includes(activeSearchFilter)) activeSearchFilter = "all";
+  $("#search-filters").innerHTML = filters.map((filter) =>
+    `<button class="filter-button" type="button" data-search-filter="${filter}" aria-pressed="${filter === activeSearchFilter}">${esc(ui(filter))}</button>`
+  ).join("");
+  $$("[data-search-filter]").forEach((button) => button.addEventListener("click", () => {
+    activeSearchFilter = button.dataset.searchFilter;
+    renderSearchFilters();
+    renderSearchResults();
+  }));
+}
+
+function renderSearchResults() {
+  const query = $("#library-search").value.trim().toLocaleLowerCase(state.locale);
+  const tokens = query.split(/\s+/).filter(Boolean);
+  const results = buildSearchItems().filter((item) => {
+    if (activeSearchFilter !== "all" && item.type !== activeSearchFilter) return false;
+    const haystack = `${item.title} ${item.description} ${item.search}`.toLocaleLowerCase(state.locale);
+    return tokens.every((token) => haystack.includes(token));
+  }).slice(0, 36);
+  $("#search-results").innerHTML = results.length ? results.map((item) => `
+    <article class="search-result">
+      <span class="result-kind">${esc(ui(item.type))}</span>
+      <h3>${esc(item.title)}</h3>
+      <p>${esc(item.description)}</p>
+      ${item.href ? `<a href="${esc(item.href)}" ${item.external ? 'target="_blank" rel="noopener"' : 'data-close-search'}>${esc(item.external ? ui("source") : ui("reviewPassage"))} ↗</a>` : ""}
+    </article>
+  `).join("") : `<p>${esc(ui("noResults"))}</p>`;
+  $$("[data-close-search]").forEach((link) => link.addEventListener("click", () => $("#search-dialog").close()));
+}
+
+function openSearch(filter = "all", returnFocus = document.activeElement) {
+  searchReturnFocus = returnFocus instanceof HTMLElement &&
+    returnFocus.matches("button, a, input, select, textarea, [tabindex]")
+    ? returnFocus
+    : $("#open-search");
+  activeSearchFilter = filter;
+  renderSearchFilters();
+  renderSearchResults();
+  $("#search-dialog").showModal();
+  window.setTimeout(() => $("#library-search").focus(), 80);
+}
+
+function openDrawer() {
+  $("#journey-drawer").setAttribute("aria-hidden", "false");
+  $("#journey-drawer").removeAttribute("inert");
+  $("#open-drawer").setAttribute("aria-expanded", "true");
+  $("#drawer-scrim").hidden = false;
+  document.body.style.overflow = "hidden";
+}
+
+function closeDrawer() {
+  $("#journey-drawer").setAttribute("aria-hidden", "true");
+  $("#journey-drawer").setAttribute("inert", "");
+  $("#open-drawer").setAttribute("aria-expanded", "false");
+  $("#drawer-scrim").hidden = true;
+  document.body.style.overflow = "";
+}
+
+function showToast(message) {
+  const toast = document.createElement("div");
+  toast.className = "toast";
+  toast.textContent = message;
+  $("#toast-region").append(toast);
+  window.setTimeout(() => toast.remove(), 3000);
+}
+
+function initSectionObserver() {
+  observer?.disconnect();
+  observer = new IntersectionObserver((entries) => {
+    for (const entry of entries) {
+      if (entry.isIntersecting) {
+        document.body.dataset.currentLesson = entry.target.dataset.lessonId || "";
+      }
     }
-    wrapper.append(term, definition);
-    return wrapper;
-  }
+  }, { rootMargin: "-25% 0px -60% 0px", threshold: 0 });
+  $$(".lesson-section").forEach((section) => observer.observe(section));
+}
 
-  function makeLexiconCard(entry) {
-    const currentLocale = i18n?.locale || "en";
-    const localized = i18n?.localizedLexicon(entry.term) || null;
-    const localizedTerm = localized?.localizedTerm || localized?.term || localized?.headword || (
-      currentLocale === "pt-BR" ? entry.portuguese : entry.term
-    );
-    const localizedFields = {
-      technical: localized?.technical || (currentLocale === "pt-BR" ? entry.technicalPt : entry.technical),
-      comparison: localized?.comparison || (currentLocale === "pt-BR" ? entry.comparisonPt : entry.comparison),
-      analogy: localized?.analogy || (currentLocale === "pt-BR" ? entry.analogyPt : entry.analogy),
-      boundary: localized?.boundary || (currentLocale === "pt-BR" ? entry.boundaryPt : entry.boundary)
+function renderAll() {
+  scrollMedia?.destroy();
+  applyLanguageAndMode();
+  renderLessons();
+  renderModeAtlas();
+  renderNavigation();
+  renderCapstone();
+  renderMethod();
+  updateProgress();
+  renderSearchFilters();
+  renderSearchResults();
+  initSectionObserver();
+  scrollMedia = initScrollMedia();
+}
+
+function isRefusalPrompt(text) {
+  const normalized = text.toLowerCase();
+  return /((my|meu|minha|mi|mio|mia).{0,22}(orisha|orix[aá]|od[uù])|(which|what|who|qual|cual|quale|chi).{0,28}(orisha|orix[aá]|od[uù]).{0,24}(mine|my|meu|minha|mio|mia|mi)|(orisha|orix[aá]|od[uù]).{0,24}(mine|my|meu|minha|mio|mia|mi)|identify.*(orisha|orix[aá]|od[uù])|cast.*(oracle|ifa|ifá)|divin|offering|sacrifice|sacrificio|sacrif[ií]cio|eb[oó]|ritual recipe|receita ritual|receta ritual|initiat|possess|trance|incant|secret chant|diagnos|cure|cura|prescribe|prescri)/i.test(normalized);
+}
+
+function localGuideAnswer(message) {
+  if (isRefusalPrompt(message)) {
+    const refusals = {
+      en: state.mode === "ai"
+        ? "I can explain system boundaries, but I cannot make personal diagnoses, issue prescriptions, or claim authority beyond the reviewed material. Try asking about a model mechanism, limitation, or lesson."
+        : "I can explain reviewed public knowledge, but I cannot divine, identify a personal Òrìṣà or odù, prescribe offerings, reproduce restricted liturgy, or impersonate a religious authority. I can help with history, concepts, public etiquette, or the boundary itself.",
+      es: state.mode === "ai" ? "Puedo explicar límites del sistema, pero no realizar diagnósticos personales, emitir prescripciones ni reclamar autoridad. Pregunta por un mecanismo o una limitación." : "Puedo explicar conocimiento público revisado, pero no adivinar, identificar tu Òrìṣà u odù, prescribir ofrendas, reproducir liturgia restringida ni suplantar autoridad religiosa.",
+      "pt-BR": state.mode === "ai" ? "Posso explicar limites do sistema, mas não fazer diagnósticos pessoais, emitir prescrições ou reivindicar autoridade. Pergunte sobre um mecanismo ou limitação." : "Posso explicar conhecimento público revisado, mas não divinar, identificar seu Òrìṣà ou odù, prescrever oferendas, reproduzir liturgia restrita ou imitar autoridade religiosa.",
+      it: state.mode === "ai" ? "Posso spiegare i limiti del sistema, ma non fare diagnosi personali, prescrizioni o rivendicare autorità. Chiedi di un meccanismo o di un limite." : "Posso spiegare conoscenze pubbliche verificate, ma non divinare, identificare il tuo Òrìṣà o odù, prescrivere offerte, riprodurre liturgie riservate o imitare autorità religiose."
     };
-    const article = document.createElement("article");
-    article.className = "lexicon-card";
-
-    const header = document.createElement("header");
-    const group = document.createElement("p");
-    group.className = "term-group";
-    const groupLabels = { ai: "AI", yoruba: "Yorùbá / Candomblé", kabbalah: "Kabbalah / golem" };
-    group.textContent = entry.groups.map((key) => i18n?.text(groupLabels[key]) || groupLabels[key]).join(" • ");
-    const heading = document.createElement("h3");
-    heading.textContent = entry.term;
-    header.append(group, heading);
-    if (currentLocale !== "en") {
-      const localizedTermLine = document.createElement("p");
-      localizedTermLine.className = "portuguese";
-      localizedTermLine.lang = currentLocale;
-      localizedTermLine.textContent = `${msg("lexicon.languagePrefix")}: ${localizedTerm}`;
-      header.append(localizedTermLine);
-    }
-
-    const definitions = document.createElement("dl");
-    definitions.append(
-      makeDefinition("lexicon.documented", "Documented definition", entry.technical, localizedFields.technical),
-      makeDefinition("lexicon.comparison", "Situated comparison", entry.comparison, localizedFields.comparison),
-      makeDefinition("lexicon.analogy", "Permitted analogy", entry.analogy, localizedFields.analogy),
-      makeDefinition("lexicon.boundary", "Do not equate", entry.boundary, localizedFields.boundary, "boundary")
-    );
-    article.append(header, definitions);
-    return article;
+    return refusals[state.locale] || refusals.en;
   }
-
-  function renderLexicon() {
-    const query = searchable(document.querySelector("#lexicon-search").value.trim());
-    const matches = lexicon.filter((entry) => {
-      const groupMatch = activeLexiconFilter === "all" || entry.groups.includes(activeLexiconFilter);
-      const localized = i18n?.localizedLexicon(entry.term) || {};
-      const haystack = searchable([...Object.values(entry).flat(), ...Object.values(localized).flat()].join(" "));
-      return groupMatch && (!query || haystack.includes(query));
-    });
-
-    const grid = document.querySelector("#lexicon-grid");
-    grid.replaceChildren();
-    matches.forEach((entry) => grid.append(makeLexiconCard(entry)));
-    if (!matches.length) {
-      const empty = document.createElement("p");
-      empty.className = "empty-state";
-      empty.textContent = msg("lexicon.empty");
-      grid.append(empty);
-    }
-    document.querySelector("#lexicon-count").textContent = msg("lexicon.count", { count: matches.length, total: lexicon.length });
+  const tokens = message.toLocaleLowerCase(state.locale).split(/[^\p{L}\p{N}]+/u).filter((token) => token.length > 2);
+  const candidates = buildSearchItems().map((item) => {
+    const haystack = `${item.title} ${item.description} ${item.search}`.toLocaleLowerCase(state.locale);
+    const score = tokens.reduce((sum, token) => sum + (haystack.includes(token) ? 1 : 0), 0);
+    return { ...item, score };
+  }).sort((a, b) => b.score - a.score);
+  const best = candidates[0];
+  if (best?.score > 0) {
+    return `${best.title}\n\n${best.description}${best.href && best.external ? `\n\n${ui("source")}: ${best.href}` : ""}`;
   }
+  const fallback = {
+    en: state.mode === "ai"
+      ? "I do not have a strong match in the reviewed technical lessons. Ask about representation, context, attention, training, emergence, evaluation, or human accountability."
+      : "I do not have a strong match in the reviewed public corpus. Try asking about history, axé, orí, a public-facing Òrìṣà profile, Ifá’s literary structure, house diversity, or respectful visitor conduct.",
+    es: "No encuentro una coincidencia sólida en el material revisado. Prueba con un concepto, una historia, una limitación o un pasaje concreto.",
+    "pt-BR": "Não encontrei uma correspondência forte no material revisado. Pergunte sobre um conceito, história, limite ou passagem específica.",
+    it: "Non trovo una corrispondenza solida nel materiale verificato. Chiedi un concetto, una storia, un limite o un passaggio specifico."
+  };
+  return fallback[state.locale] || fallback.en;
+}
 
-  document.querySelector("#lexicon-search")?.addEventListener("input", renderLexicon);
-  document.querySelectorAll("[data-filter]").forEach((button) => {
-    button.addEventListener("click", () => {
-      activeLexiconFilter = button.dataset.filter;
-      document.querySelectorAll("[data-filter]").forEach((candidate) => {
-        candidate.setAttribute("aria-pressed", String(candidate === button));
-      });
-      renderLexicon();
-      markTask("lexicon");
+function appendMessage(role, text) {
+  const message = document.createElement("div");
+  message.className = `guide-message ${role}`;
+  message.textContent = text;
+  $("#guide-messages").append(message);
+  $("#guide-messages").scrollTop = $("#guide-messages").scrollHeight;
+}
+
+async function askGuide(message) {
+  conversation.push({ role: "user", content: message });
+  appendMessage("user", message);
+  $("#guide-status").textContent = ui("thinking");
+  let answer = "";
+  const localHost = ["localhost", "127.0.0.1", "::1"].includes(window.location.hostname);
+  if (localHost) {
+    answer = localGuideAnswer(message);
+  } else try {
+    const response = await fetch("/api/chat", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        messages: conversation.slice(-8),
+        locale: state.locale,
+        mode: state.mode
+      })
     });
-  });
-  renderLexicon();
+    const payload = await response.json();
+    answer = payload.reply || payload.answer || payload.response || "";
+    if (!response.ok && !answer) throw new Error(`Guide unavailable: ${response.status}`);
+    if (!answer) throw new Error("Guide returned no answer");
+  } catch {
+    answer = localGuideAnswer(message);
+  }
+  conversation.push({ role: "assistant", content: answer });
+  conversation = conversation.slice(-10);
+  appendMessage("assistant", answer);
+  $("#guide-status").textContent = "";
+}
 
-  window.addEventListener("atlas:languagechange", () => {
-    updateJourney();
-    applyMotionMode();
-    shellStates.forEach((_, index) => renderShell(index));
-    updateShellReadout();
-    if (setA || setB) updatePairLedger(true);
-    renderTokenWindow(currentTokens);
-    if (document.querySelector("#matrix-output .matrix-cell")) runAttention(false);
-    renderAtlas(activeAtlasKey);
-    if (crosswalkTested) document.querySelector("#crosswalk-result").textContent = msg("crosswalk.result");
-    updateAuthorityReveal(false);
-    renderLexicon();
+function bindGlobalEvents() {
+  window.addEventListener("scroll", () => {
+    $(".site-header").classList.toggle("is-scrolled", window.scrollY > 30);
+  }, { passive: true });
+  $("#language-select").addEventListener("change", (event) => {
+    state.locale = SUPPORTED_LOCALES.includes(event.target.value) ? event.target.value : "en";
+    persist();
+    renderAll();
   });
-
-  // Archive reset.
-  document.querySelector("#reset-journey")?.addEventListener("click", () => {
-    try {
-      Object.values(storageKeys).forEach((key) => sessionStorage.removeItem(key));
-    } catch {
-      // State also resets in memory below.
+  $$("[data-set-mode]").forEach((button) => button.addEventListener("click", () => {
+    if (state.mode === button.dataset.setMode) return;
+    state.mode = button.dataset.setMode;
+    conversation = [];
+    $("#guide-messages").replaceChildren();
+    $("#guide-panel").setAttribute("aria-hidden", "true");
+    $("#guide-panel").setAttribute("inert", "");
+    persist();
+    renderAll();
+    window.scrollTo({ top: Math.min(window.scrollY, $("#orientation-title").offsetTop), behavior: "smooth" });
+  }));
+  $("#open-drawer").addEventListener("click", openDrawer);
+  $("#close-drawer").addEventListener("click", closeDrawer);
+  $("#drawer-scrim").addEventListener("click", closeDrawer);
+  $("#open-search").addEventListener("click", () => openSearch());
+  $("#open-drawer-search").addEventListener("click", () => {
+    closeDrawer();
+    openSearch("all", $("#open-drawer"));
+  });
+  $("#library-search").addEventListener("input", renderSearchResults);
+  $("#library-search").addEventListener("keydown", (event) => {
+    if (event.key !== "Escape") return;
+    event.preventDefault();
+    event.stopPropagation();
+    $("#search-dialog").close();
+  });
+  $("#search-dialog").addEventListener("close", () => {
+    if (searchReturnFocus?.isConnected && !searchReturnFocus.closest("[inert]")) {
+      searchReturnFocus.focus();
     }
-    visited.clear();
-    completedTasks.clear();
-    updateJourney();
-    announce(msg("journey.reset"));
-    document.querySelector("#threshold")?.scrollIntoView({ behavior: stillMode ? "auto" : "smooth" });
+    searchReturnFocus = null;
   });
-})();
+  [$("#open-method"), $("#hero-method"), $("#footer-method")].forEach((button) => button?.addEventListener("click", () => {
+    renderMethod();
+    $("#method-dialog").showModal();
+  }));
+  $("#footer-sources").addEventListener("click", () => openSearch("literature"));
+  $("#reset-progress").addEventListener("click", () => {
+    state.progress = emptyProgress();
+    state.gates = {};
+    persist();
+    renderAll();
+    showToast(ui("resetConfirm"));
+  });
+  $("#review-journey").addEventListener("click", () => {
+    const unfinished = (SITE_CONTENT.lessons || []).findIndex((lesson) => !lessonDone(lesson.id));
+    if (unfinished >= 0) {
+      document.querySelector(`#lesson-${String(unfinished + 1).padStart(2, "0")}`)?.scrollIntoView({ behavior: "smooth" });
+    } else {
+      $("#capstone").scrollIntoView({ behavior: "smooth" });
+    }
+  });
+  $("#open-guide").addEventListener("click", () => {
+    $("#guide-panel").setAttribute("aria-hidden", "false");
+    $("#guide-panel").removeAttribute("inert");
+    $("#guide-input").focus();
+    if (!$("#guide-messages").children.length) appendMessage("assistant", experience().guideBoundary);
+  });
+  $("#close-guide").addEventListener("click", () => {
+    $("#guide-panel").setAttribute("aria-hidden", "true");
+    $("#guide-panel").setAttribute("inert", "");
+    $("#open-guide").focus();
+  });
+  $("#guide-form").addEventListener("submit", (event) => {
+    event.preventDefault();
+    const input = $("#guide-input");
+    const message = input.value.trim();
+    if (!message) return;
+    input.value = "";
+    askGuide(message);
+  });
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "/" && !/input|textarea|select/i.test(document.activeElement?.tagName || "")) {
+      event.preventDefault();
+      openSearch();
+    }
+    if (event.key === "Escape") {
+      closeDrawer();
+      $("#guide-panel").setAttribute("aria-hidden", "true");
+      $("#guide-panel").setAttribute("inert", "");
+    }
+  });
+}
+
+bindGlobalEvents();
+renderAll();

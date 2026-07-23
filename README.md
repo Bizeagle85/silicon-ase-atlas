@@ -1,37 +1,44 @@
-# The Silicon–Àṣẹ Question
+# Àṣẹ & Understanding
 
-An offline-capable, source-critical interactive atlas accompanying the expanded *Magnum Opus of Universal Divinatory Systems*.
+A multilingual, source-led learning journey about public knowledge in Ifá and Candomblé, paired with a separately authored secular systems lens.
 
-## What it contains
+## Experience
 
-- Eight image-led sections organized as three study gates: Representation, Encoding/Relation, and Authority.
-- A keyboard-accessible sixteen-object state editor that stops before religious interpretation.
-- A transparent demonstration tokenizer and finite 24-unit context window.
-- A fully inspectable two-vector attention matrix beside an ordered-pair lookup equation.
-- Separate Kabbalistic, Ifá, and *Yijing* cardinality views with an explicit failed-crosswalk test.
-- A searchable EN/ES/PT-BR/IT comparative lexicon with complete localized definitions, permitted analogies, and forbidden equivalences.
-- A persistent-in-session language selector that translates the full interface, interactive status messages, accessibility labels, atlas explanations, and lexicon.
-- Eight original artworks, two silent films, selected sources, a downloadable Python simulator, and the eight canonical visual prompt templates.
-
-## Run locally
-
-Open the Desktop launcher installed with this delivery, or serve this folder with any local static web server. The app makes no network requests. It stores only orientation acknowledgement, viewed sections, and completed learning activities in temporary browser-session storage.
+- Twelve passages from first orientation to advanced public literacy.
+- Distinct Tradition and Systems modes with different writing, visual language, color, motion, and explicit boundaries.
+- English, Spanish, Brazilian Portuguese, and Italian.
+- Twelve commissioned contemporary interpretive illustrations.
+- A 72-frame, scroll-controlled hero sequence with reverse playback, responsive rendering, reduced-motion support, and a data-saving fallback.
+- Lesson exercises, knowledge checks, reflections, course progress, a searchable glossary, public-facing profiles, literature, and source links.
+- A three-gate public ritual-literacy capstone that teaches preparation, respectful observation, and responsible return without reconstructing a rite.
+- A floating learning guide backed by Cloudflare Workers AI, with a safe local retrieval fallback.
 
 ## Boundaries
 
-This is an educational interface, not an initiation, divination, consultation, oracle, spiritual authority, or ritual guide. It does not provide sign mappings, verses, offerings, sacrificial instructions, sacred-name operations, or house-specific restricted knowledge. The plaintext password present in the source brief is treated as disclosed and is not included anywhere in the app.
+This experience teaches advanced public literacy—not initiation, divination, spiritual diagnosis, ritual office, or mastery of house-restricted knowledge.
 
-## Files
+Ifá and Candomblé are related but not interchangeable. Candomblé remains internally plural: Ketu/Nagô, Jeje, Angola/Congo, and other traditions retain distinct vocabularies and authority. The app excludes initiatory procedures, sacrifice, offerings and prescriptions, private liturgy, plant formulas, trance induction, personal Òrìṣà or odù identification, and impersonation of clergy.
 
-- `index.html`, `styles.css`, `app.js`: the complete static application.
-- `assets/images/`: eight original section images in optimized WebP plus archival PNG copies.
-- `assets/video/threshold-loop.mp4`: silent reduced-motion-safe hero loop.
-- `assets/video/atlas-journey.mp4`: 25-second silent film moving through all eight artworks.
-- `downloads/The_Magnum_Opus_of_Universal_Divinatory_Systems_Expanded.pdf`: 182-page read-only edition.
-- `downloads/The_Magnum_Opus_of_Universal_Divinatory_Systems_Expanded.docx`: complete, portable copy of the expanded research edition.
-- `downloads/desdobramento_attention_simulator.py`: standard-library Python matrix demonstration.
-- `downloads/visual-prompt-templates.md`: exact reusable specifications for the eight section images and optional threshold loop.
-- `_headers`: restrictive security and privacy headers for Cloudflare Pages.
+The Systems mode is a secular technical interpretation. It discusses data, representations, constraints, inference, uncertainty, evaluation, and human governance. It does not present structural analogies as proof of shared identity, consciousness, or authority.
+
+All generated spiritual-mode artwork is labeled as contemporary interpretive illustration, not documentary imagery or a literal portrait of a divinity.
+
+## Run locally
+
+Use the Desktop launcher provided with the project, or serve this directory with a local static server. The static lessons, exercises, search, translations, and local guide fallback work offline. Live guide responses require the deployed Cloudflare Pages Function.
+
+The browser stores only language, lens, and course progress in local storage. The chat endpoint does not persist conversations.
+
+## Architecture
+
+- `index.html`, `styles.css`, `app.js`: interface and interaction layer.
+- `content.js`: localized curriculum, profiles, glossary, exercises, and sources.
+- `scroll-media.js`: progressive scroll-scrub video and image-sequence engine.
+- `assets/images/journey/`: optimized interpretive illustrations.
+- `assets/sequence/threshold/`: locally derived hero frames.
+- `functions/api/chat.js`: bounded multilingual learning guide.
+- `functions/_shared/knowledge.js`: public-only source context and safety language.
+- `wrangler.jsonc`: Cloudflare Pages and Workers AI binding.
 
 ## Deployment
 
@@ -39,4 +46,4 @@ This is an educational interface, not an initiation, divination, consultation, o
 - Cloudflare Pages: <https://silicon-ase-atlas.pages.dev>
 - Source: <https://github.com/Bizeagle85/silicon-ase-atlas>
 
-The Cloudflare Pages project is connected to this repository's `main` branch. New commits to `main` trigger an automatic production deployment. The custom hostname uses a scoped CNAME record for `loss0.projectdominion.com`; no other `projectdominion.com` records are part of this project.
+The Pages project is connected to the repository's `main` branch. The `AI` binding supplies Workers AI to the Pages Function.

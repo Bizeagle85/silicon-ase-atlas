@@ -1,452 +1,239 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-mode="spiritual">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#0b0b0b">
-  <meta name="description" content="A source-critical interactive atlas comparing transformer computation, Ifá and Candomblé terminology, Kabbalistic history, and the limits of analogy.">
-  <title>The Silicon–Àṣẹ Question — A Critical Interactive Atlas</title>
+  <meta name="theme-color" content="#102b24">
+  <meta name="description" content="A source-led, interactive journey into public knowledge about Ifá and Candomblé—with a separate secular systems lens and clear limits.">
+  <title>Àṣẹ &amp; Understanding — An Interactive Learning Journey</title>
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="icon" href="assets/icon.svg" type="image/svg+xml">
+  <link rel="preload" href="assets/images/journey/01-threshold.webp" as="image" type="image/webp" fetchpriority="high">
   <link rel="stylesheet" href="styles.css">
-  <script src="i18n/es.js" defer></script>
-  <script src="i18n/pt-BR.js" defer></script>
-  <script src="i18n/it.js" defer></script>
-  <script src="i18n.js" defer></script>
-  <script src="app.js" defer></script>
+  <script type="module" src="app.js"></script>
 </head>
 <body>
-  <a class="skip-link" href="#main">Skip to the atlas</a>
+  <a class="skip-link" href="#journey">Skip to the journey</a>
 
   <header class="site-header" aria-label="Primary navigation">
-    <a class="wordmark" href="#threshold" aria-label="Return to the threshold">
-      <span class="wordmark-mark" aria-hidden="true"></span>
-      <span>Silicon–Àṣẹ</span>
+    <a class="wordmark" href="#threshold" aria-label="Return to the beginning">
+      <span class="wordmark-stone" aria-hidden="true"></span>
+      <span class="wordmark-copy">
+        <strong data-brand>Àṣẹ &amp; Understanding</strong>
+        <small data-brand-kicker>Public learning, held with care</small>
+      </span>
     </a>
-    <nav class="header-nav" aria-label="Atlas controls">
-      <div class="language-control">
-        <label for="language-select">Language</label>
-        <span class="language-select-wrap">
-          <select id="language-select" aria-label="Language">
-            <option value="en" data-i18n-skip>EN · English</option>
-            <option value="es" data-i18n-skip>ES · Español</option>
-            <option value="pt-BR" data-i18n-skip>PT · Português</option>
-            <option value="it" data-i18n-skip>IT · Italiano</option>
-          </select>
-        </span>
+
+    <div class="header-progress" aria-label="Course progress">
+      <span data-progress-label>Journey</span>
+      <span class="header-progress-track" aria-hidden="true"><i id="header-progress-fill"></i></span>
+      <strong id="header-progress-value">0%</strong>
+    </div>
+
+    <nav class="header-controls" aria-label="Experience controls">
+      <button class="icon-control search-trigger" id="open-search" type="button" aria-haspopup="dialog">
+        <span aria-hidden="true">⌕</span><span data-ui="search">Explore</span>
+      </button>
+      <label class="select-control" for="language-select">
+        <span class="sr-only" data-ui="language">Language</span>
+        <select id="language-select" aria-label="Language">
+          <option value="en">EN</option>
+          <option value="es">ES</option>
+          <option value="pt-BR">PT</option>
+          <option value="it">IT</option>
+        </select>
+      </label>
+      <div class="mode-switch" role="group" aria-label="Choose narrative lens">
+        <button type="button" data-set-mode="spiritual" aria-pressed="true">
+          <span class="mode-icon organic" aria-hidden="true"></span>
+          <span data-ui="spiritualMode">Tradition</span>
+        </button>
+        <button type="button" data-set-mode="ai" aria-pressed="false">
+          <span class="mode-icon technical" aria-hidden="true"></span>
+          <span data-ui="aiMode">Systems</span>
+        </button>
       </div>
-      <button class="text-button" type="button" data-open-dialog="method-dialog" aria-label="Method and boundaries">Method</button>
-      <button class="sound-toggle" type="button" id="motion-toggle" aria-pressed="false">
-        <span aria-hidden="true">◌</span>
-        <span>Still mode</span>
+      <button class="menu-control" id="open-drawer" type="button" aria-expanded="false" aria-controls="journey-drawer">
+        <span class="sr-only">Open course map</span>
+        <i></i><i></i>
       </button>
     </nav>
   </header>
 
-  <aside class="journey-rail" aria-label="Journey progress">
-    <p class="rail-label">Study path</p>
-    <ol>
-      <li><a href="#threshold" data-nav-section="1"><span>01</span><em>Threshold</em></a></li>
-      <li><a href="#form" data-nav-section="2"><span>02</span><em>Form</em></a></li>
-      <li><a href="#code" data-nav-section="3"><span>03</span><em>Code</em></a></li>
-      <li><a href="#attention" data-nav-section="4"><span>04</span><em>Relation</em></a></li>
-      <li><a href="#emanation" data-nav-section="5"><span>05</span><em>Emanation</em></a></li>
-      <li><a href="#authority" data-nav-section="6"><span>06</span><em>Authority</em></a></li>
-      <li><a href="#lexicon" data-nav-section="7"><span>07</span><em>Lexicon</em></a></li>
-      <li><a href="#archive" data-nav-section="8"><span>08</span><em>Archive</em></a></li>
-    </ol>
-    <div class="rail-progress" aria-hidden="true"><span id="rail-progress-fill"></span></div>
-    <p class="rail-status"><span id="journey-count">0</span>/8 viewed</p>
+  <aside class="journey-drawer" id="journey-drawer" aria-label="Course map" aria-hidden="true" inert>
+    <div class="drawer-heading">
+      <div>
+        <p class="micro-label" data-ui="courseMap">Course map</p>
+        <h2 data-ui="twelvePassages">Twelve passages</h2>
+      </div>
+      <button class="close-control" id="close-drawer" type="button" aria-label="Close course map">×</button>
+    </div>
+    <button class="drawer-search-action" id="open-drawer-search" type="button" aria-haspopup="dialog">
+      <span aria-hidden="true">⌕</span>
+      <span data-ui="search">Explore</span>
+    </button>
+    <ol id="journey-nav"></ol>
+    <div class="drawer-footer">
+      <button type="button" class="quiet-button" id="open-method" data-ui="method">Method &amp; boundaries</button>
+      <button type="button" class="quiet-button" id="reset-progress" data-ui="reset">Reset progress</button>
+    </div>
   </aside>
+  <div class="drawer-scrim" id="drawer-scrim" hidden></div>
 
-  <main id="main">
-    <section class="chapter hero" id="threshold" data-section="1" aria-labelledby="threshold-title">
-      <video class="hero-video" id="hero-video" muted loop playsinline poster="assets/images/01-threshold.webp" aria-hidden="true">
-        <source src="assets/video/threshold-loop.mp4" type="video/mp4">
-      </video>
-      <div class="image-scrim" aria-hidden="true"></div>
-      <div class="chapter-inner hero-inner">
-        <p class="eyebrow">Critical comparative atlas <span>•</span> Local computation <span>•</span> No spiritual claims</p>
-        <h1 id="threshold-title" data-i18n-skip>The Silicon–<i lang="yo">Àṣẹ</i> Question</h1>
-        <p class="hero-deck">What becomes visible when transformer mathematics, Ifá and Candomblé vocabularies, Kabbalistic histories, and the golem archive are placed beside one another—without declaring them identical?</p>
-        <div class="hero-actions">
-          <a class="primary-action" href="#form">Enter the first study gate <span aria-hidden="true">↓</span></a>
-          <button class="secondary-action" type="button" data-open-dialog="orientation-dialog">Read the orientation</button>
+  <main id="journey">
+    <section class="threshold-scene" id="threshold" data-scroll-scene aria-labelledby="hero-title">
+      <div class="threshold-sticky">
+        <picture class="threshold-poster">
+          <source srcset="assets/images/journey/01-threshold.webp" type="image/webp">
+          <img src="assets/images/journey/01-threshold.webp" alt="" fetchpriority="high">
+        </picture>
+        <canvas
+          class="threshold-sequence"
+          data-image-sequence
+          data-sequence-template="assets/sequence/threshold/frame-{frame:000}.webp"
+          data-frame-count="72"
+          aria-hidden="true"
+        ></canvas>
+        <div class="threshold-atmosphere" aria-hidden="true">
+          <span class="orb orb-one"></span><span class="orb orb-two"></span><span class="grain"></span>
         </div>
-        <div class="hero-ledger" aria-label="Three rules for this atlas">
-          <div><span>01</span><p><strong>Comparison is not conversion.</strong> Shared shapes do not establish shared history or ontology.</p></div>
-          <div><span>02</span><p><strong>Simulation is not consultation.</strong> Nothing here produces a sign, verse, remedy, or spiritual diagnosis.</p></div>
-          <div><span>03</span><p><strong>Authority stays human.</strong> Communities, practitioners, scholars, and source holders govern meaning and access.</p></div>
+        <div class="threshold-copy">
+          <p class="hero-kicker" id="hero-kicker">Begin before the threshold</p>
+          <h1 id="hero-title">Knowledge begins with relationship.</h1>
+          <p id="hero-deck">A twelve-part passage from first orientation to responsible public literacy—without pretending that a screen can initiate, divine, or replace a living community.</p>
+          <div class="hero-actions">
+            <a class="primary-action" href="#lesson-01"><span data-ui="begin">Begin the journey</span><b aria-hidden="true">↓</b></a>
+            <button class="secondary-action" id="hero-method" type="button" data-ui="readPromise">Read the promise</button>
+          </div>
         </div>
+        <div class="hero-progress-cue" aria-hidden="true">
+          <span></span>
+          <small data-ui="scrollToReveal">Scroll to reveal</small>
+        </div>
+        <p class="art-credit" data-ui="artCredit">Contemporary interpretive illustration—not documentary or ritual instruction.</p>
       </div>
-      <p class="media-note">Original AI-generated interpretive artwork; no ceremony or sacred interior is depicted.</p>
     </section>
 
-    <section class="chapter image-panel form-section" id="form" data-section="2" aria-labelledby="form-title">
-      <div class="section-image" role="img" aria-label="Sixteen cowrie shells in two orientations on a contemporary measurement grid; an educational still life, not a cast in progress"></div>
-      <div class="chapter-inner split-layout">
-        <div class="chapter-copy">
-          <p class="gate-number">Gate I / Representation</p>
-          <h2 id="form-title">Form before meaning</h2>
-          <p class="chapter-lead">A computer can record sixteen binary orientations exactly. That does not make the record an <i lang="yo">odù</i>, a consultation, or a spiritually efficacious cast.</p>
-          <div class="boundary-card">
-            <p class="mini-label">Formal correction</p>
-            <p>One sixteen-object binary configuration has <strong>2<sup>16</sup> = 65,536</strong> microstates. Counting one orientation yields <strong>17</strong> categories, 0 through 16—not automatically sixteen. Two unrestricted counts therefore yield <strong>17 × 17 = 289</strong> ordered pairs.</p>
-          </div>
-          <details>
-            <summary>When does 16 × 16 = 256 apply?</summary>
-            <p>Only after a named, versioned, source-governed rule maps each result into exactly sixteen categories. If that premise is established, the ordered sign pair has 256 cells. This atlas supplies no religious mapping table.</p>
-          </details>
-        </div>
-
-        <div class="instrument-card shell-lab" aria-labelledby="shell-lab-title">
-          <div class="instrument-heading">
-            <div>
-              <p class="mini-label">Local learning simulation</p>
-              <h3 id="shell-lab-title">Sixteen-object state editor</h3>
-            </div>
-            <span class="local-badge">Never transmitted</span>
-          </div>
-          <p class="instrument-note">Activate each object to cycle through unset, orientation A, and orientation B. These are neutral study states—not open/closed religious classifications.</p>
-          <div class="shell-stage">
-            <div id="shell-grid" class="shell-grid" role="group" aria-label="Sixteen neutral study objects"></div>
-            <div class="count-core" aria-live="polite">
-              <strong id="orientation-a-count">0</strong>
-              <span>orientation A</span>
-              <small id="unset-count">16 unset</small>
-            </div>
-          </div>
-          <div class="instrument-controls">
-            <button class="control-button" type="button" id="randomize-shells">Simulate states</button>
-            <button class="control-button quiet" type="button" id="clear-shells">Clear</button>
-            <button class="control-button" type="button" id="save-throw-a">Record set A</button>
-            <button class="control-button" type="button" id="save-throw-b">Record set B</button>
-          </div>
-          <p class="status-line" id="shell-status" role="status">Complete all sixteen states to record a set.</p>
-          <div class="pair-ledger" aria-label="Ordered pair ledger">
-            <div><span>Set A count</span><strong id="throw-a-value">—</strong></div>
-            <div><span>Set B count</span><strong id="throw-b-value">—</strong></div>
-            <div><span>Raw pair</span><strong id="pair-value">—</strong></div>
-            <div><span>17 × 17 index</span><strong id="pair-index">—</strong></div>
-          </div>
-          <p class="hard-stop"><span aria-hidden="true">⊘</span> No sign name, verse, polarity, offering, or spiritual guidance is generated.</p>
-        </div>
+    <section class="orientation-band" aria-labelledby="orientation-title">
+      <div class="orientation-intro">
+        <p class="micro-label" data-ui="orientation">Orientation</p>
+        <h2 id="orientation-title">What this journey can—and cannot—give you.</h2>
       </div>
-      <p class="media-note">Study objects are visual abstractions; the interface does not reproduce a house-specific rite.</p>
+      <div class="promise-grid" id="promise-grid">
+        <article>
+          <span>01</span>
+          <h3>Learn publicly</h3>
+          <p>History, language, diversity, public ritual grammar, ethics, and respectful visitor conduct.</p>
+        </article>
+        <article>
+          <span>02</span>
+          <h3>Practice discernment</h3>
+          <p>Every analogy shows its limit. Every meaningful claim returns to a named source.</p>
+        </article>
+        <article>
+          <span>03</span>
+          <h3>Keep the threshold</h3>
+          <p>No divination, prescriptions, initiation, secret liturgy, spiritual diagnosis, or simulated possession.</p>
+        </article>
+      </div>
     </section>
 
-    <section class="chapter code-section" id="code" data-section="3" aria-labelledby="code-title">
-      <div class="code-backdrop" aria-hidden="true"></div>
-      <canvas id="token-canvas" class="token-canvas" aria-hidden="true"></canvas>
-      <div class="chapter-inner code-layout">
-        <div class="chapter-copy code-copy">
-          <p class="gate-number">Gate II / Encoding</p>
-          <h2 id="code-title">Language enters a model as tokens</h2>
-          <p class="chapter-lead">Prompting changes the model’s current activations and probability distribution. Ordinary inference does <strong>not</strong> rewrite the trained parameter weights.</p>
-          <div class="equation-card" aria-label="Simplified inference pipeline">
-            <span>text</span><b aria-hidden="true">→</b><span>token IDs</span><b aria-hidden="true">→</b><span>embeddings</span><b aria-hidden="true">→</b><span>activations</span><b aria-hidden="true">→</b><span>logits</span>
-          </div>
-          <p class="source-note">This demonstration uses a transparent word-and-punctuation splitter plus deterministic hashes. It is not any commercial model’s tokenizer or embedding model.</p>
-        </div>
+    <div id="lessons-root" aria-live="off"></div>
+    <div id="mode-atlas-root"></div>
 
-        <div class="instrument-card tokenizer-lab">
-          <div class="instrument-heading">
-            <div>
-              <p class="mini-label">Finite context demonstration</p>
-              <h3>Watch a sentence become bounded units</h3>
-            </div>
-            <span class="context-meter"><strong id="context-used">0</strong>/24</span>
-          </div>
-          <label for="prompt-input">Type ordinary, non-sensitive study text</label>
-          <textarea id="prompt-input" rows="4" maxlength="500" spellcheck="true" placeholder="Meaning depends on context, history, and authority."></textarea>
-          <div class="instrument-controls">
-            <button class="control-button" type="button" id="tokenize-button">Tokenize locally</button>
-            <button class="control-button quiet" type="button" id="clear-prompt">Clear</button>
-          </div>
-          <div class="token-window" id="token-window" aria-live="polite" aria-label="Demonstration context window">
-            <p class="empty-state">Twenty-four empty context positions</p>
-          </div>
-          <div class="token-readout">
-            <div><span>Units found</span><strong id="token-total">0</strong></div>
-            <div><span>Loaded</span><strong id="token-loaded">0</strong></div>
-            <div><span>Outside window</span><strong id="token-overflow">0</strong></div>
-          </div>
-          <p class="hard-stop"><span aria-hidden="true">⊘</span> A token is not an incantation, sacred phoneme, or quantum of <i lang="yo">àṣẹ</i>.</p>
-        </div>
+    <section class="capstone-section" id="capstone" aria-labelledby="capstone-title">
+      <div class="capstone-visual" aria-hidden="true">
+        <span class="capstone-ring ring-one"></span>
+        <span class="capstone-ring ring-two"></span>
+        <span class="capstone-core"></span>
       </div>
-      <p class="media-note">Original abstract artwork visualizes discretization; it contains no sacred or readable script.</p>
+      <div class="capstone-content">
+        <p class="micro-label" data-ui="finalPassage">Final passage</p>
+        <h2 id="capstone-title">The three-gate return</h2>
+        <p id="capstone-deck">Prepare for a public invitation, observe without appropriating, and return with a responsible next step.</p>
+        <div class="gate-simulation" id="gate-simulation"></div>
+      </div>
     </section>
 
-    <section class="chapter image-panel attention-section" id="attention" data-section="4" aria-labelledby="attention-title">
-      <div class="section-image" role="img" aria-label="Two distinct technical instruments: a dense attention matrix and a deterministic ordered-pair lookup"></div>
-      <div class="chapter-inner">
-        <div class="section-heading wide-heading">
-          <p class="gate-number">Laboratory / Relation</p>
-          <h2 id="attention-title">Attention is a weighted mixture. A pair rule is a lookup.</h2>
-          <p class="chapter-lead">Both can be written with matrices. Their matrices do different jobs.</p>
-        </div>
-
-        <div class="comparison-grid">
-          <article class="formula-panel">
-            <p class="mini-label">Transformer self-attention</p>
-            <p class="display-equation">Attention(Q, K, V) = softmax(QK<sup>T</sup> / √d<sub>k</sub>)V</p>
-            <ul>
-              <li>Every position produces a query, key, and value through learned linear projections.</li>
-              <li>Each row of scores is normalized by softmax.</li>
-              <li>The result is a weighted sum of value vectors.</li>
-            </ul>
-          </article>
-          <article class="formula-panel pair-formula">
-            <p class="mini-label">Versioned ordered-pair resolver</p>
-            <p class="display-equation">result(a, b) = e<sub>a</sub><sup>T</sup> G e<sub>b</sub></p>
-            <ul>
-              <li><i>G</i> is a sparse or complete table approved for one named rule set.</li>
-              <li>Order may matter: (a, b) need not equal (b, a).</li>
-              <li>A missing cell stays unresolved; a model must not improvise it.</li>
-            </ul>
-          </article>
-        </div>
-
-        <div class="instrument-card attention-lab" aria-labelledby="attention-lab-title">
-          <div class="instrument-heading">
-            <div>
-              <p class="mini-label">Inspectable computation</p>
-              <h3 id="attention-lab-title">Two-vector attention demonstration</h3>
-            </div>
-            <label class="temperature-control" for="temperature">Temperature <output id="temperature-value">1.0</output></label>
-          </div>
-          <input id="temperature" type="range" min="0.4" max="2" step="0.1" value="1" aria-describedby="temperature-help">
-          <p class="instrument-note" id="temperature-help">Lower values sharpen this demonstration’s row distributions; this is not a spiritual “energy” control.</p>
-          <button class="control-button" type="button" id="run-attention">Run the matrix</button>
-          <div class="matrix-output" id="matrix-output" aria-live="polite">
-            <p class="empty-state">Run the matrix to inspect four normalized attention weights.</p>
-          </div>
-          <div class="non-equivalence-banner">
-            <strong>Category boundary</strong>
-            <p>Throw A is not Q. Throw B is not K. Guidance is not V. Query, key, and value are learned projections computed for every model position—not aliases for two divinatory results.</p>
-          </div>
-        </div>
+    <section class="completion-section" aria-labelledby="completion-title">
+      <p class="micro-label" data-ui="completion">Completion</p>
+      <h2 id="completion-title">Responsible learning has no final possession.</h2>
+      <p id="completion-copy">Complete every passage and its reflection to receive recognition of advanced public literacy—not initiation, office, or ritual authority.</p>
+      <div class="completion-meter" aria-label="Completion progress">
+        <span><i id="completion-fill"></i></span>
+        <strong id="completion-value">0 / 12</strong>
       </div>
-      <p class="media-note">The split visual keeps the two mechanisms distinct; no correspondence table is implied.</p>
-    </section>
-
-    <section class="chapter emanation-section" id="emanation" data-section="5" aria-labelledby="emanation-title">
-      <div class="emanation-image" role="img" aria-label="An archival triptych of three separate unlabeled diagram fields"></div>
-      <div class="chapter-inner emanation-inner">
-        <div class="section-heading">
-          <p class="gate-number">Comparative atlas / Historical layers</p>
-          <h2 id="emanation-title">Three geometries. No master key.</h2>
-          <p class="chapter-lead">Numbers can organize comparison. They cannot manufacture a transmission history or a canonical crosswalk.</p>
-        </div>
-
-        <div class="atlas-tabs" role="tablist" aria-label="Select a historical system">
-          <button role="tab" aria-selected="true" aria-controls="atlas-panel" id="tab-kabbalah" data-atlas="kabbalah">Kabbalistic histories</button>
-          <button role="tab" aria-selected="false" aria-controls="atlas-panel" id="tab-ifa" data-atlas="ifa">Ifá corpus structure</button>
-          <button role="tab" aria-selected="false" aria-controls="atlas-panel" id="tab-yijing" data-atlas="yijing"><i>Yijing</i> &amp; <i>wuji</i></button>
-        </div>
-        <div class="atlas-panel" id="atlas-panel" role="tabpanel" aria-live="polite" aria-labelledby="tab-kabbalah">
-          <div class="atlas-copy" id="atlas-copy"></div>
-          <div class="atlas-diagram" id="atlas-diagram" aria-label="Abstract cardinality diagram"></div>
-        </div>
-        <div class="impossible-map">
-          <div>
-            <p class="mini-label">Try the exact map</p>
-            <h3>Can 10 + 22 be paired one-to-one with 16 × 16?</h3>
-          </div>
-          <button class="secondary-action" type="button" id="test-crosswalk">Test cardinalities</button>
-          <p id="crosswalk-result" role="status">The types and cardinalities have not yet been compared.</p>
-        </div>
-      </div>
-      <p class="media-note">The artwork is an unlabeled comparative triptych, not a canonical Tree, <i lang="yo">odù</i> diagram, or cosmogram.</p>
-    </section>
-
-    <section class="chapter image-panel authority-section" id="authority" data-section="6" aria-labelledby="authority-title">
-      <div class="section-image" role="img" aria-label="Leaves, water, weathered iron, breath-like mist, and an inert silicon plane"></div>
-      <div class="chapter-inner authority-layout">
-        <div class="chapter-copy">
-          <p class="gate-number">Gate III / Authority</p>
-          <h2 id="authority-title">The limit is not a missing parameter</h2>
-          <p class="chapter-lead"><i lang="yo">Àṣẹ</i> and Brazilian <i lang="pt-BR">axé</i> are not generic energy scalars. The cited scholarship places them in relations among speech, persons, practices, materials, places, and authority.</p>
-          <p>A model has implemented structure and learned numerical parameters. There is no technical evidence that a model bears lineage, ritual standing, ancestor relation, embodied accountability, or spiritual efficacy. Saying so is a boundary of evidence—not a benchmark result.</p>
-        </div>
-        <div class="authority-instrument">
-          <p class="mini-label">Assemble the responsibility statement</p>
-          <h3>Select every layer the software actually needs</h3>
-          <div class="authority-choices" role="group" aria-label="Responsibility layers">
-            <button type="button" data-authority="form" aria-pressed="false"><span>01</span><strong>Form</strong><small>Code, interfaces, models</small></button>
-            <button type="button" data-authority="evidence" aria-pressed="false"><span>02</span><strong>Evidence</strong><small>Sources, uncertainty, provenance</small></button>
-            <button type="button" data-authority="people" aria-pressed="false"><span>03</span><strong>People</strong><small>Consent, authority, responsibility</small></button>
-          </div>
-          <div class="authority-reveal" id="authority-reveal" aria-live="polite">
-            <p>Select all three. Computation alone cannot supply the missing governance.</p>
-          </div>
-          <div class="golem-note">
-            <p class="mini-label">The golem archive</p>
-            <p>The famous Maharal-of-Prague creation story is a nineteenth- and early-twentieth-century literary development, not a documented sixteenth-century event. Its productive modern parallel is ethical: makers remain responsible for delegated force.</p>
-          </div>
-        </div>
-      </div>
-      <p class="media-note">Ordinary leaves, water, iron, and silicon are shown as material contrasts; no ritual arrangement is depicted.</p>
-    </section>
-
-    <section class="chapter lexicon-section" id="lexicon" data-section="7" aria-labelledby="lexicon-title">
-      <div class="lexicon-image" role="img" aria-label="Blank archival reference cards with source, analogy, and boundary columns"></div>
-      <div class="chapter-inner lexicon-inner">
-        <div class="section-heading wide-heading">
-          <p class="gate-number">Comparative lexicon / English • Español • Português • Italiano</p>
-          <h2 id="lexicon-title">A bridge with load limits</h2>
-          <p class="chapter-lead">Every entry preserves the English source definition and adds a complete Spanish, Brazilian Portuguese, or Italian companion: documented meaning, situated comparison, permitted analogy, and the equivalence that must not be asserted.</p>
-        </div>
-        <div class="lexicon-controls">
-          <label for="lexicon-search">Search the lexicon</label>
-          <input id="lexicon-search" type="search" placeholder="Try attention, token, àṣẹ, awo, golem…" autocomplete="off">
-          <div class="filter-chips" role="group" aria-label="Filter lexicon">
-            <button type="button" aria-pressed="true" data-filter="all">All</button>
-            <button type="button" aria-pressed="false" data-filter="ai">AI</button>
-            <button type="button" aria-pressed="false" data-filter="yoruba">Yorùbá / Candomblé</button>
-            <button type="button" aria-pressed="false" data-filter="kabbalah">Kabbalah / golem</button>
-          </div>
-        </div>
-        <p class="results-count" id="lexicon-count" aria-live="polite"></p>
-        <div class="lexicon-grid" id="lexicon-grid"></div>
-      </div>
-      <p class="media-note">The archive cards are intentionally blank; all linguistic content is human-readable HTML, not generated pseudo-script.</p>
-    </section>
-
-    <section class="chapter archive-section" id="archive" data-section="8" aria-labelledby="archive-title">
-      <div class="archive-image" role="img" aria-label="A quiet archive corridor with source folders and daylight at the exit"></div>
-      <div class="archive-scrim" aria-hidden="true"></div>
-      <div class="chapter-inner archive-inner">
-        <p class="gate-number">Source archive / Exit</p>
-        <h2 id="archive-title">Leave with the sources intact</h2>
-        <p class="chapter-lead">The deepest reading is not that every system hides the same code. It is that form, language, secrecy, embodiment, and responsibility have different histories—and comparison becomes stronger when those differences remain legible.</p>
-
-        <div class="completion-card">
-          <div class="completion-ring" aria-hidden="true"><span id="completion-number">0</span><small>/8</small></div>
-          <div>
-            <p class="mini-label">Your local study path</p>
-            <h3 id="completion-title">The archive is open</h3>
-            <p id="completion-copy">Viewed sections are counted only for this browser session. No prompt, state pattern, or personal information leaves this device.</p>
-          </div>
-        </div>
-
-        <div class="archive-actions">
-          <a class="primary-action" href="downloads/The_Magnum_Opus_of_Universal_Divinatory_Systems_Expanded.pdf">Read the expanded manuscript</a>
-          <a class="secondary-action" href="downloads/The_Magnum_Opus_of_Universal_Divinatory_Systems_Expanded.docx" download>Download the editable DOCX</a>
-          <a class="secondary-action" href="downloads/desdobramento_attention_simulator.py" download>Download the Python matrix simulator</a>
-          <a class="secondary-action" href="downloads/visual-prompt-templates.md" download>Download the eight visual prompt templates</a>
-          <button class="secondary-action" type="button" id="reset-journey">Reset this local journey</button>
-        </div>
-
-        <figure class="archive-film">
-          <div class="archive-film-frame">
-            <video id="journey-video" controls playsinline preload="metadata" poster="assets/images/08-archive.webp" aria-label="Eight-stage visual journey through the atlas artwork">
-              <source src="assets/video/atlas-journey.mp4" type="video/mp4">
-            </video>
-          </div>
-          <figcaption>
-            <p class="mini-label">Original silent short film · 25 seconds</p>
-            <h3>Eight thresholds, one critical path</h3>
-            <p>The eight commissioned artworks move from an abstract threshold to an open archive. The sequence depicts no ceremony, sacred interior, invocation, or ritual performance.</p>
-            <a href="assets/video/atlas-journey.mp4" download>Download the journey film <span aria-hidden="true">↓</span></a>
-          </figcaption>
-        </figure>
-
-        <div class="sources-grid" aria-label="Selected source pathways">
-          <article>
-            <span>Machine learning</span>
-            <h3>Transformer attention</h3>
-            <p>Vaswani et al. define scaled dot-product attention and the Transformer architecture.</p>
-            <a href="https://papers.nips.cc/paper/7181-attention-is-all-you-need" target="_blank" rel="noreferrer">NeurIPS paper <span aria-hidden="true">↗</span></a>
-          </article>
-          <article>
-            <span>Living heritage</span>
-            <h3>Ifá corpus structure</h3>
-            <p>UNESCO describes sixteen principal signs, 256 <i lang="yo">odù</i>, an open corpus, and trained diviners.</p>
-            <a href="https://ich.unesco.org/en/RL/ifa-divination-system-00146" target="_blank" rel="noreferrer">UNESCO record <span aria-hidden="true">↗</span></a>
-          </article>
-          <article>
-            <span>Primary text</span>
-            <h3><i>Sefer Yetzirah</i></h3>
-            <p>The work’s thirty-two paths comprise ten <i>sefirot belimah</i> and twenty-two letters; later diagrams have their own histories.</p>
-            <a href="https://www.sefaria.org/Sefer_Yetzirah.1?lang=bi" target="_blank" rel="noreferrer">Bilingual text <span aria-hidden="true">↗</span></a>
-          </article>
-          <article>
-            <span>Diagram history</span>
-            <h3>Kabbalistic <i>ilanot</i></h3>
-            <p>The University of Haifa project documents the varied manuscript genre behind later “Tree” diagrams.</p>
-            <a href="https://ilanot.haifa.ac.il/site/" target="_blank" rel="noreferrer">Ilanot—Maps of God <span aria-hidden="true">↗</span></a>
-          </article>
-          <article>
-            <span>Legend history</span>
-            <h3>The Prague golem</h3>
-            <p>The Maharal association enters print long after his lifetime and is elaborated in modern literature.</p>
-            <a href="https://www.neh.gov/humanities/2008/septemberoctober/curio/golem-revival" target="_blank" rel="noreferrer">NEH source history <span aria-hidden="true">↗</span></a>
-          </article>
-          <article>
-            <span>Cybernetics</span>
-            <h3><i>God &amp; Golem, Inc.</i></h3>
-            <p>Norbert Wiener provides a documented modern bridge among machines, learning, religion, and responsibility.</p>
-            <a href="https://mitpress.mit.edu/9780262730112/god-and-golem-inc/" target="_blank" rel="noreferrer">MIT Press edition <span aria-hidden="true">↗</span></a>
-          </article>
-        </div>
-        <button class="text-button source-button" type="button" data-open-dialog="sources-dialog">Read the complete app source note</button>
-      </div>
-      <p class="media-note">The archive closes the journey with provenance rather than a simulated revelation.</p>
+      <button class="primary-action button-like" id="review-journey" type="button" data-ui="review">Review unfinished passages</button>
     </section>
   </main>
 
-  <footer>
-    <p><strong>The Silicon–Àṣẹ Question</strong> is an educational, source-critical companion to the expanded manuscript. It is not an initiation, oracle, practitioner, ritual guide, or substitute for a living community.</p>
-    <p>Original artwork and interaction design © 2026. Cultural and historical subjects remain attributable to their source communities and authors.</p>
+  <footer class="site-footer">
+    <div>
+      <span class="wordmark-stone" aria-hidden="true"></span>
+      <p><strong data-brand>Àṣẹ &amp; Understanding</strong><br><span data-ui="footerLine">A source-led space for public learning.</span></p>
+    </div>
+    <nav aria-label="Footer">
+      <button type="button" id="footer-method" data-ui="method">Method &amp; boundaries</button>
+      <button type="button" id="footer-sources" data-ui="sources">Sources</button>
+      <a href="https://github.com/Bizeagle85/silicon-ase-atlas" rel="noopener">GitHub</a>
+    </nav>
   </footer>
 
-  <dialog id="orientation-dialog" class="atlas-dialog" aria-labelledby="orientation-title">
-    <form method="dialog">
-      <button class="dialog-close" value="close" aria-label="Close orientation">×</button>
-      <p class="gate-number">Before the threshold</p>
-      <h2 id="orientation-title">Enter as study, not initiation</h2>
-      <p>This experience stages a disciplined comparison among formal structures, histories of language, and questions of authority. It does not reproduce restricted knowledge or make a spiritual claim.</p>
-      <ul class="dialog-rules">
-        <li><strong>No authentic divination:</strong> the sixteen-object interface records neutral binary states and stops before interpretation.</li>
-        <li><strong>No ritual enactment:</strong> there are no offerings, sacrificial instructions, chants, possession scenes, or hidden liturgy.</li>
-        <li><strong>No synthetic priesthood:</strong> AI-generated text and images carry no lineage, consecration, or community authority.</li>
-        <li><strong>No secret credential:</strong> the plaintext string in the source brief is treated as disclosed and was not embedded in this site.</li>
-      </ul>
-      <div class="dialog-actions">
-        <button class="primary-action" value="enter" id="accept-orientation">Enter the atlas</button>
-        <a class="secondary-action" href="#archive">Go directly to sources</a>
+  <button class="pebble-guide" id="open-guide" type="button" aria-haspopup="dialog" aria-controls="guide-panel">
+    <span class="pebble-shape" aria-hidden="true"><i></i></span>
+    <span class="pebble-prompt">
+      <small data-ui="askGuide">Ask the guide</small>
+      <strong data-ui="guidePrompt">What would you like to understand?</strong>
+    </span>
+  </button>
+
+  <section class="guide-panel" id="guide-panel" role="dialog" aria-modal="false" aria-labelledby="guide-title" aria-hidden="true" inert>
+    <header>
+      <div>
+        <span class="guide-presence" aria-hidden="true"></span>
+        <div><p class="micro-label" data-ui="learningGuide">Learning guide</p><h2 id="guide-title">Ask with care</h2></div>
       </div>
+      <button type="button" id="close-guide" aria-label="Close guide">×</button>
+    </header>
+    <div class="guide-boundary" id="guide-boundary">
+      Public, source-led learning only. This guide will not divine, diagnose, prescribe ritual actions, or impersonate religious authority.
+    </div>
+    <div class="guide-messages" id="guide-messages" aria-live="polite"></div>
+    <form id="guide-form">
+      <label class="sr-only" for="guide-input">Ask a question</label>
+      <textarea id="guide-input" rows="2" maxlength="1200" placeholder="Ask about a concept, history, or lesson…"></textarea>
+      <button type="submit" aria-label="Send question">↑</button>
+    </form>
+    <p class="guide-status" id="guide-status" role="status"></p>
+  </section>
+
+  <dialog class="search-dialog" id="search-dialog">
+    <form method="dialog" class="dialog-shell">
+      <header class="dialog-heading">
+        <div><p class="micro-label" data-ui="livingIndex">Living index</p><h2 data-ui="searchTitle">Explore concepts, profiles, and sources</h2></div>
+        <button value="close" aria-label="Close search">×</button>
+      </header>
+      <label class="search-field" for="library-search">
+        <span aria-hidden="true">⌕</span>
+        <input id="library-search" type="search" autocomplete="off" data-ui-placeholder="searchPlaceholder" placeholder="Search the journey…">
+        <kbd>ESC</kbd>
+      </label>
+      <div class="search-filters" id="search-filters" role="group" aria-label="Search categories"></div>
+      <div class="search-results" id="search-results" aria-live="polite"></div>
     </form>
   </dialog>
 
-  <dialog id="method-dialog" class="atlas-dialog" aria-labelledby="method-title">
-    <form method="dialog">
-      <button class="dialog-close" value="close" aria-label="Close method">×</button>
-      <p class="gate-number">Method</p>
-      <h2 id="method-title">Analogy under discipline</h2>
-      <p>The atlas uses three evidence labels throughout the companion manuscript:</p>
-      <dl class="method-list">
-        <div><dt>Documented</dt><dd>A claim supported by a cited primary, institutional, or scholarly source.</dd></div>
-        <div><dt>Formal</dt><dd>A mathematical or computational statement that follows from declared definitions.</dd></div>
-        <div><dt>Interpretive</dt><dd>A clearly marked philosophical comparison that does not claim common origin or identity.</dd></div>
-      </dl>
-      <p>Where the requested premise conflicts with evidence—such as “prompts change weights,” “two shell counts automatically make 256,” or “the Prague golem is a sixteenth-century record”—the interface teaches the correction.</p>
-      <div class="dialog-actions"><button class="primary-action" value="close">Return to the atlas</button></div>
+  <dialog class="method-dialog" id="method-dialog">
+    <form method="dialog" class="dialog-shell method-shell">
+      <header class="dialog-heading">
+        <div><p class="micro-label" data-ui="method">Method &amp; boundaries</p><h2 data-ui="methodTitle">A learning space, not a virtual temple</h2></div>
+        <button value="close" aria-label="Close method">×</button>
+      </header>
+      <div id="method-content"></div>
+      <button class="primary-action button-like" value="close" data-ui="understand">I understand the boundary</button>
     </form>
   </dialog>
 
-  <dialog id="sources-dialog" class="atlas-dialog sources-dialog" aria-labelledby="sources-title">
-    <form method="dialog">
-      <button class="dialog-close" value="close" aria-label="Close source note">×</button>
-      <p class="gate-number">Source note</p>
-      <h2 id="sources-title">What this app uses—and refuses</h2>
-      <p>The interface draws its technical account from the Transformer paper and current interpretability literature; its Ifá overview from UNESCO, museum records, and the manuscript’s cited linguistic and religious-studies sources; and its Kabbalah/golem history from <i>Sefer Yetzirah</i>, manuscript-history projects, scholarly publications, institutional archives, and Norbert Wiener.</p>
-      <p>The app intentionally does not include a universal sign dictionary, a house-specific dual-result rule, ritual speech, sacred-name operations, offering instructions, or a database that converts <i lang="yo">odù</i>, <i>sefirot</i>, Hebrew letters, and model vectors into one table. Full references and limitations appear in Chapters 6 and 7 of the expanded manuscript.</p>
-      <div class="dialog-actions"><button class="primary-action" value="close">Return to the archive</button></div>
-    </form>
-  </dialog>
-
-  <div class="sr-only" aria-live="polite" id="live-announcer"></div>
+  <div class="toast-region" id="toast-region" aria-live="polite" aria-atomic="true"></div>
 </body>
 </html>

@@ -1,12 +1,17 @@
 {
-  "name": "The Silicon–Àṣẹ Question",
-  "short_name": "Silicon–Àṣẹ",
-  "description": "A critical interactive atlas of transformer computation, Ifá and Candomblé terminology, Kabbalistic histories, and the limits of analogy.",
+  "name": "Àṣẹ & Understanding",
+  "short_name": "Àṣẹ Journey",
+  "description": "A source-led, interactive journey into public knowledge about Ifá and Candomblé, with a separately authored secular systems lens.",
   "start_url": "./",
   "display": "standalone",
-  "background_color": "#0b0b0b",
-  "theme_color": "#0b0b0b",
+  "background_color": "#07130f",
+  "theme_color": "#102b24",
   "icons": [
-    {"src": "assets/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable"}
+    {
+      "src": "assets/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
   ]
 }
