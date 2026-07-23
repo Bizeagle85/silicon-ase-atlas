@@ -1,0 +1,48 @@
+# Canonical visual prompt templates for *The Silicon–Àṣẹ Question*
+
+These eight final production templates match the subject, layout, palette, and boundary treatment of the shipped atlas imagery. They create contemporary educational art—not documentary evidence, ritual scenes, canonical sacred diagrams, or claims of spiritual authenticity.
+
+## Shared production specification
+
+- **Format:** horizontal 16:9 composition, 2048 × 1152 or larger.
+- **Art direction:** museum-grade editorial abstraction; tactile charcoal-black ground; warm ivory; oxidized copper; muted indigo; mineral red; restrained gold leaf; cinematic side light; subtle paper grain; generous negative space.
+- **Continuity:** the same palette, surface texture, and lighting logic across all eight images, with a distinct central composition for each stage.
+- **No text:** no letters, words, numbers, pseudo-writing, signatures, logos, watermarks, or UI screenshots.
+- **Cultural boundary:** no deity portrait, initiated person, shrine interior, divination-in-progress, sacred implement presented as functional, ritual garment, bead sequence, offering, sacrifice, blood, invented glyph, Hebrew divine name, pentagram, veve, runes, or generic “tribal/occult” motif.
+- **Disclosure:** label every released image as an AI-generated contemporary educational interpretation.
+
+## 01 — Threshold: comparison begins with difference
+
+> Create a cinematic horizontal 16:9 editorial artwork for the opening threshold of a critical comparative-religion atlas. A monumental dark doorway stands slightly off-center in an immense charcoal architectural void. Warm ivory daylight passes through the opening and catches thin suspended copper threads that approach one another without merging. On the floor, three independent material traces—an indigo curve, a mineral-red sequence of small neutral marks, and a restrained gold geometric network—remain visibly separate as they lead toward the door. Museum-installation atmosphere, tactile plaster and paper grain, oxidized copper, subtle volumetric light, profound but non-supernatural. No people, no sacred objects, no ritual scene, no text, no alphabetic or pseudo-sacred symbols, no deity imagery. AI-generated contemporary educational interpretation.
+
+## 02 — Gate I / Form: sixteen observations, many encodings
+
+> Create a cinematic horizontal 16:9 abstract educational still life about representation and finite state. Sixteen clean ivory cowrie shells are arranged in a precise four-by-four field on the right side of a black stone surface, each shown in one of two clearly visible orientations. Fine oxidized-copper measurement lines, registration points, and arcs establish a modern analytical grid behind the shells; leave the left third as deep negative space for interface copy. Make the shells tactile and photorealistic but the arrangement explicitly diagrammatic, not a cast in progress and not a house-specific procedure. Charcoal, ivory, oxidized copper, muted indigo-green patina, mineral-red flecks, soft side light, subtle paper grain. No hands, people, tray, shrine, offering, ritual staging, sign names, verse, readable text, letters, numbers, or invented glyphs. AI-generated contemporary educational interpretation.
+
+## 03 — Gate II / Code: language becomes a bounded sequence
+
+> Create a cinematic horizontal 16:9 editorial abstraction about tokenization and context. A long ribbon of warm ivory paper enters from the left, breaks into a finite procession of small differently sized ceramic tiles, and passes through a clearly bounded indigo chamber before continuing as layered copper light. The segmentation is visibly mechanical and imperfect: some tile boundaries fall inside larger visual groupings. The chamber has a fixed beginning and end, suggesting a limited context window without showing any interface. Museum-grade materials, charcoal background, oxidized copper, muted indigo, mineral red accents, restrained gold, subtle paper grain and side light. No readable language, no letters, no numbers, no sacred marks, no ritual object, no people, no mystical coding trope. AI-generated contemporary educational interpretation.
+
+## 04 — Relation Lab: lookup and attention are different matrices
+
+> Create a cinematic horizontal 16:9 split-composition editorial artwork comparing two mathematical relations without declaring them identical. On the left, a sparse square field contains one illuminated copper cell selected by two ivory coordinate bars. On the right, a dense indigo matrix contains many softly glowing weights whose rows form visible gradients, feeding into a layered fan of value-like glass strips. A narrow dark seam keeps the two systems separate. Precise contemporary scientific visualization rendered as tactile museum sculpture, charcoal, ivory, copper, indigo, restrained gold, mineral-red control accents, subtle paper grain, dramatic but sober side light. No text, equations, letters, numbers, sacred symbols, divination objects, people, or occult effects. AI-generated contemporary educational interpretation.
+
+## 05 — Emanation Atlas: three structures without a universal crosswalk
+
+> Create a cinematic horizontal 16:9 museum-board artwork on weathered warm-ivory parchment, presenting three clearly separated, unlabeled analytical fields. On the left, draw an abstract ten-circle branching network in fine brass and muted blue-gray lines; it may evoke the history of arboreal diagrams but must not reproduce a canonical Tree or contain Hebrew. In the center, arrange eight slim vertical rails of alternating filled and open copper circles, like a modern binary-combination study. On the right, paint a large concentric target-like field in charcoal, oxidized indigo-green, mineral red, ivory, and fine gold registration lines. Along the bottom place eight small tactile material swatches connected only by a neutral baseline. Preserve wide seams between the three systems: no universal bridge and no one-to-one correspondences. Aged paper, brass pins, archival drafting, restrained gold, meticulous museum conservation aesthetic. No labels, letters, numbers, divine names, actual odù signs, hexagram reproductions, people, or ritual scene. AI-generated contemporary educational interpretation.
+
+## 06 — Gate III / Authority: the living relation is not a parameter
+
+> Create a cinematic horizontal 16:9 material still life about living relation and inert computation, without depicting ritual. In the lower-left foreground, glossy green leaves rest in a shallow stream of dark water beside rough stone. Behind them, stack several heavy weathered iron plates with oxidized copper and indigo-green patina. The water runs toward a large flat black silicon plane occupying the right half; its surface carries only extremely subtle etched circuit-like geometry and a thin warm copper edge. Wisps of ordinary atmospheric mist rise where wet organic materials meet the dry plane, but nothing glows and no energy transfers between them. Preserve expansive black negative space across the upper-right for interface copy. Photoreal tactile macro materials, charcoal, green, oxidized copper, muted indigo, restrained amber light, deep side lighting. No people, vessel, shrine, ceremony, aura, deity, divination, sacred object, text, letters, or pseudo-glyph. AI-generated contemporary educational interpretation.
+
+## 07 — Lexicon: meaning survives through controlled difference
+
+> Create a cinematic horizontal 16:9 abstract archival artwork about multilingual terminology. Rows of blank ivory index cards, translucent indigo language tabs, copper divider rails, and small mineral-red provenance seals form a searchable but non-readable catalog. Several cards occupy adjacent tracks linked by dotted comparison threads; the threads end before the cards, showing analogy without equivalence. One card is withdrawn into a protected dark drawer, suggesting restricted or unavailable material. Museum archive atmosphere, charcoal, ivory, oxidized copper, muted indigo, restrained gold, crisp side light and paper grain. Absolutely no visible words, letters, numbers, fake scripts, sacred marks, people, ritual objects, or occult-library clichés. AI-generated contemporary educational interpretation.
+
+## 08 — Archive / Exit: leave with provenance intact
+
+> Create a cinematic horizontal 16:9 closing image for a source-critical interactive atlas. A quiet contemporary archive corridor recedes toward natural ivory daylight. On both sides, orderly charcoal and indigo source boxes carry only blank copper tabs; a single open folder in the foreground reveals layered blank papers, a transparent rights sheet, and a small provenance thread leading back through the corridor. Eight faint pools of warm light mark the completed path without forming a sacred pattern. The mood is contemplative, accountable, and open-ended. Museum-quality editorial realism with tactile paper, oxidized copper, restrained gold, mineral-red accents, subtle grain. No readable text, no people, no sacred or ritual objects, no shrine, no divine symbols, no invented glyphs, no supernatural glow. AI-generated contemporary educational interpretation.
+
+## Optional motion treatment
+
+For a silent 10–15 second threshold loop, animate only environmental features from image 01: slow dust motes, a nearly imperceptible shift in daylight, and gentle parallax among doorway, threads, and floor traces. The first and final frames must match. No flash, rapid zoom, strobe, apparition, object transformation, text, sound, or implication that the image performs a rite. Supply a static poster and honor `prefers-reduced-motion`.

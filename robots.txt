@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://loss0.projectdominion.com/sitemap.xml
