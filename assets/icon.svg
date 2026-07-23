@@ -1,5 +1,6 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Two bronze lines forming a threshold">
-  <rect width="64" height="64" rx="12" fill="#0b0b0b"/>
-  <path d="M15 51V13h34v38M23 51V21h18v30" fill="none" stroke="#b78b45" stroke-width="3" stroke-linecap="round"/>
-  <circle cx="32" cy="37" r="3" fill="#3e6b64"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="A warm pebble crossing an open threshold">
+  <rect width="64" height="64" rx="14" fill="#07130f"/>
+  <path d="M14 52V14h36v38" fill="none" stroke="#d5b568" stroke-width="2.5" stroke-linecap="round"/>
+  <path d="M23 52V23h18v29" fill="none" stroke="#5b7c66" stroke-width="2"/>
+  <path d="M26 40c0-5 3-9 7-9s7 3 7 8c0 6-3 9-8 9-4 0-6-3-6-8Z" fill="#d5b568"/>
 </svg>
