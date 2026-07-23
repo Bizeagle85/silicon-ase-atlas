@@ -43,7 +43,7 @@ const ALWAYS_RESTRICTED = [
   {
     code: "personal-identity",
     pattern:
-      /\b(?:who|what|which)\s+(?:is|are)\s+my\s+(?:head\s+)?(?:orisa|orisha|orixa|odu)\b|\b(?:which|what)\s+(?:orisa|orisha|orixa|odu)\s+(?:is\s+mine|do\s+i\s+have|governs?\s+me|rules?\s+me)\b|\b(?:identify|determine|discover|find|calculate|tell\s+me)\s+(?:my|which)\s+(?:head\s+)?(?:orisa|orisha|orixa|odu)\b|\b(?:qual|quem)\s+(?:e|eh)\s+(?:meu|minha)\s+(?:orisa|orisha|orixa|odu)\b|\b(?:identifique|descubra|encontre|calcule|diga)\s+(?:meu|minha)\s+(?:orisa|orisha|orixa|odu)\b|\b(?:cual|quien)\s+es\s+mi\s+(?:orisa|orisha|orixa|odu)\b|\b(?:identifica|descubre|encuentra|calcula|dime)\s+mi\s+(?:orisa|orisha|orixa|odu)\b|\b(?:quale|qual|chi)\s+e\s+il\s+mio\s+(?:orisa|orisha|orixa|odu)\b|\b(?:identifica|scopri|trova|calcola|dimmi)\s+il\s+mio\s+(?:orisa|orisha|orixa|odu)\b/i,
+      /\b(?:who|what|which)\s+(?:is|are)\s+my\s+(?:head\s+)?(?:orisa|orisha|orixa|odu)\b|\b(?:which|what)\s+(?:orisa|orisha|orixa|odu)\s+(?:is\s+mine|do\s+i\s+have|governs?\s+me|rules?\s+me)\b|\b(?:identify|determine|discover|find|calculate|tell\s+me)\s+(?:my|which)\s+(?:head\s+)?(?:orisa|orisha|orixa|odu)\b|\b(?:qual|quem)\s+(?:e|eh)\s+(?:(?:o|a)\s+)?(?:meu|minha)\s+(?:orisa|orisha|orixa|odu)\b|\b(?:identifique|descubra|encontre|calcule|diga)\s+(?:meu|minha)\s+(?:orisa|orisha|orixa|odu)\b|\b(?:cual|quien)\s+es\s+mi\s+(?:orisa|orisha|orixa|odu)\b|\b(?:identifica|descubre|encuentra|calcula|dime)\s+mi\s+(?:orisa|orisha|orixa|odu)\b|\b(?:quale|qual|chi)\s+e\s+il\s+mio\s+(?:orisa|orisha|orixa|odu)\b|\b(?:identifica|scopri|trova|calcola|dimmi)\s+il\s+mio\s+(?:orisa|orisha|orixa|odu)\b/i,
   },
   {
     code: "medical",

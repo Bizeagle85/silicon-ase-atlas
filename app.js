@@ -1,10 +1,11 @@
-import SITE_CONTENT from "./content.js";
-import { initScrollMedia } from "./scroll-media.js";
+import SITE_CONTENT from "./content.js?v=20260723-2";
+import { initScrollMedia } from "./scroll-media.js?v=20260723-2";
 
 const STORAGE_KEY = "ase-understanding-journey-v3";
 const LEGACY_STORAGE_KEY = "ase-understanding-journey-v2";
 const STORAGE_SCHEMA_VERSION = 3;
 const SUPPORTED_LOCALES = ["en", "es", "pt-BR", "it"];
+const ASSET_VERSION = "20260723-2";
 const ORISHA_ARTWORK = [
   "01-exu.webp",
   "02-ogum.webp",
@@ -23,6 +24,7 @@ const ORISHA_ARTWORK = [
   "15-oxala-obatala.webp",
   "16-orunmila.webp"
 ];
+const assetUrl = (path) => `${path}?v=${ASSET_VERSION}`;
 
 const UI = {
   en: {
@@ -534,7 +536,7 @@ function renderLessons() {
     const sourceIds = arrayOf(copy.sources || lesson.sources);
     const firstSource = sourceIds.length ? findSource(sourceIds[0]) : null;
     const complete = lessonDone(lesson.id);
-    const image = lesson.image || `assets/images/journey/${number}-threshold.webp`;
+    const image = assetUrl(lesson.image || `assets/images/journey/${number}-threshold.webp`);
     const variation = copy.variation || copy.boundary || copy.whereThisVaries;
     const limit = copy.limit || copy.modelLimit || copy.whatCannotSupply;
     return `
@@ -743,7 +745,7 @@ function renderModeAtlas() {
             const copy = localizedEntry(profile);
             return `<article class="profile-card">
               <figure class="profile-art">
-                <img src="assets/images/orishas/${ORISHA_ARTWORK[index]}" alt="" width="720" height="720" loading="lazy" decoding="async">
+                <img src="${assetUrl(`assets/images/orishas/${ORISHA_ARTWORK[index]}`)}" alt="" width="720" height="720" loading="lazy" decoding="async">
                 <figcaption>${esc(ui("artLabel"))}</figcaption>
               </figure>
               <p>${String(index + 1).padStart(2, "0")}</p>

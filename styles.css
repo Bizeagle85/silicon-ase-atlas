@@ -113,6 +113,26 @@
     transition: transform .2s;
   }
   .skip-link:focus { transform: none; }
+  .not-found {
+    min-height: 100svh;
+    display: grid;
+    place-content: center;
+    gap: 24px;
+    padding: var(--edge);
+    text-align: center;
+  }
+  .not-found .wordmark-stone { margin-inline: auto; width: 42px; }
+  .not-found h1 { max-width: 760px; font-size: clamp(3.5rem, 10vw, 8rem); }
+  .not-found p { max-width: 560px; color: var(--muted); }
+  .not-found a {
+    width: fit-content;
+    margin-inline: auto;
+    padding: 12px 20px;
+    border: 1px solid var(--line-strong);
+    border-radius: 999px;
+    color: var(--accent-bright);
+    text-decoration: none;
+  }
   .micro-label {
     color: var(--accent-bright);
     font-size: .7rem;
